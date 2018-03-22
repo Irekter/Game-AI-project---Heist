@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 
 public class Astar : MonoBehaviour {
@@ -10,33 +11,44 @@ public class Astar : MonoBehaviour {
     public Transform target;
     Grid grid;
     public GameObject[] targets;
-   
+    public GameObject exit;
+    List<GameObject> trgts;
 
     private void Awake()
     {
         targets = GameObject.FindGameObjectsWithTag("End");
+        exit = GameObject.FindGameObjectWithTag("Exit");
+        trgts = targets.ToList();
         grid = GetComponent<Grid>();
-        //prique = GetComponent<PriorityQueue<Node>>();
+        
     }
 
     private void Update()
     {
         float mindistance = int.MaxValue;
-        List<GameObject> visited = new List<GameObject>();
-        
-        foreach(GameObject end in targets)
-        {
-            if (!visited.Contains(end))
+        List<Transform> visited = new List<Transform>();
+        GameObject toberemoved = null;
+
+        if (trgts.Count == 0)
+            trgts.Add(exit);
+
+        foreach (GameObject end in trgts)
+        { 
+            if (Vector3.Distance(end.transform.position, start.position) < mindistance)
             {
-                if (Vector3.Distance(end.transform.position, start.position) < mindistance)
-                {
                     target = end.transform;
+                    toberemoved = end;
                     mindistance = Vector3.Distance(target.position, start.position);
-                }
-            }
-            if (start.position == end.transform.position)
-                visited.Add(end);
+            }  
         }
+       
+        if (Vector3.Distance(target.position, start.position) <= 2)
+        {
+            visited.Add(target);
+            trgts.Remove(toberemoved);
+            mindistance = int.MaxValue;
+        }
+
         pathfinder(start.position, target.position);
     }
 
