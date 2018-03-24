@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Astar.unity
+- path: Assets/Scenes/Astar.unity
   isLoaded: 1
   isActive: 1

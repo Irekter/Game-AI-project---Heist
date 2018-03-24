@@ -61,7 +61,7 @@ public class Grid : MonoBehaviour {
             for (int j = 0; j < num_of_grid_y; j++)
             {
                 Vector3 point_pos = start + Vector3.right * (i * node_diameter + node_size) + Vector3.forward * (j * node_diameter + node_size);
-                point_pos.y = 1;
+                point_pos.y = 0.5f;
                 bool is_obstacle = false;
 
                 if (Physics.CheckSphere(point_pos, node_diameter, obstacles))
