@@ -9,7 +9,7 @@ public class AutoMove : MonoBehaviour {
     public Transform player;
     public Transform exit;
     Node target;
-    public float speed = 0.5f;
+    public float speed = 1f;
     public int endxnodeearly = 2;
 
     // Use this for initialization

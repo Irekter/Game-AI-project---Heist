@@ -22,13 +22,17 @@ public class Astar : MonoBehaviour {
         coins = GameObject.FindGameObjectsWithTag("Coin");
         trgts = targets.ToList();
         grid = GetComponent<Grid>();
-        
     }
 
     private void Update()
     {
-        target = targetSelector();
-        pathfinder(start.position, target.position);
+        if (exit != null && exit.transform.childCount > 0)
+        {
+            target = targetSelector();
+            pathfinder(start.position, target.position);
+        }
+        else
+            Application.Quit();
     }
 
     public Transform targetSelector()
@@ -36,12 +40,13 @@ public class Astar : MonoBehaviour {
         float mindistance = int.MaxValue;
         List<Transform> visited = new List<Transform>();
         GameObject toberemoved = null;
+        GameObject coin=null;
 
         // FIX THIS ASAP
-        if (trgts.Count == 0 && exit != null)
+        if (trgts.Count == 0)
             trgts.Add(exit);
-        else
-            Application.Quit();
+        //else
+        //    Application.Quit();
 
         foreach (GameObject end in trgts)
         {
@@ -58,10 +63,10 @@ public class Astar : MonoBehaviour {
             System.Threading.Thread.Sleep(1000);
             visited.Add(target);
             trgts.Remove(toberemoved);
-            Destroy(toberemoved);
+            coin = toberemoved.transform.GetChild(0).gameObject;
+            Destroy(coin);
             mindistance = int.MaxValue;
         }
-
         return target;
     }
 
@@ -114,7 +119,11 @@ public class Astar : MonoBehaviour {
 
     float distance(Node node1, Node node2)
     {
-        return Vector3.Distance(node1.position, node2.position);
+        //return Vector3.Distance(node1.position, node2.position);
+        /* MANHATTAN DISTANCE*/
+        float result = Mathf.Abs(node1.position.x - node2.position.x) + Mathf.Abs(node1.position.y - node2.position.y)
+            + Mathf.Abs(node1.position.z - node2.position.z);
+        return result;
     }
 
     void Reconstruct_path(Node start, Node target)
