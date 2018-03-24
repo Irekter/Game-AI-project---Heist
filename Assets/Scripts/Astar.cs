@@ -4,20 +4,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-
 public class Astar : MonoBehaviour {
 
     public Transform start;
-    public Transform target;
+    Transform target;
     Grid grid;
     public GameObject[] targets;
     public GameObject exit;
     List<GameObject> trgts;
+    public float targetradius=2f;
+    public GameObject[] coins;
 
     private void Awake()
     {
         targets = GameObject.FindGameObjectsWithTag("End");
         exit = GameObject.FindGameObjectWithTag("Exit");
+        coins = GameObject.FindGameObjectsWithTag("Coin");
         trgts = targets.ToList();
         grid = GetComponent<Grid>();
         
@@ -25,63 +27,60 @@ public class Astar : MonoBehaviour {
 
     private void Update()
     {
+        target = targetSelector();
+        pathfinder(start.position, target.position);
+    }
+
+    public Transform targetSelector()
+    {
         float mindistance = int.MaxValue;
         List<Transform> visited = new List<Transform>();
         GameObject toberemoved = null;
 
-        if (trgts.Count == 0)
+        // FIX THIS ASAP
+        if (trgts.Count == 0 && exit != null)
             trgts.Add(exit);
+        else
+            Application.Quit();
 
         foreach (GameObject end in trgts)
-        { 
+        {
             if (Vector3.Distance(end.transform.position, start.position) < mindistance)
             {
-                    target = end.transform;
-                    toberemoved = end;
-                    mindistance = Vector3.Distance(target.position, start.position);
-            }  
+                target = end.transform;
+                toberemoved = end;
+                mindistance = Vector3.Distance(target.position, start.position);
+            }
         }
-       
-        if (Vector3.Distance(target.position, start.position) <= 2)
+
+        if (Vector3.Distance(target.position, start.position) <= targetradius)
         {
+            System.Threading.Thread.Sleep(1000);
             visited.Add(target);
             trgts.Remove(toberemoved);
+            Destroy(toberemoved);
             mindistance = int.MaxValue;
         }
 
-        pathfinder(start.position, target.position);
+        return target;
     }
 
-
-    void pathfinder(Vector3 start_pos, Vector3 target_pos)
+    public void pathfinder(Vector3 start_pos, Vector3 target_pos)
     {
-        Node startnode = grid.worldToNode(start.position);
-        Node targetnode = grid.worldToNode(target.position);
+        Node startnode = grid.worldToNode(start_pos);
+        Node targetnode = grid.worldToNode(target_pos);
         PriorityQueue<Node> open_set = new PriorityQueue<Node>();
-        //List<Node> open_set = new List<Node>();
 
         startnode.hscore = distance(startnode, targetnode);
         startnode.gscore = 0;
-        //startnode.fscore = startnode.gscore + startnode.hscore;
 
         List<Node> closed_set = new List<Node>();
-
         open_set.Add(startnode);
 
         while (open_set.Count() != 0)
         {
 
             Node currentnode = open_set.Poll();
-
-            //foreach (Node node in open_set)
-            //{
-            //    if (node.fscore <= currentnode.fscore && node.hscore < currentnode.hscore)
-            //    {
-            //        currentnode = node;
-            //    }
-            //}
-
-            //open_set.Remove(currentnode);
             closed_set.Add(currentnode);
 
             if (currentnode == targetnode)
@@ -109,42 +108,6 @@ public class Astar : MonoBehaviour {
                     if (!open_set.Contains(n))
                         open_set.Add(n);
                 }
-
-
-
-
-                //Node currentnode = open_set.Poll();
-
-                //if (currentnode.Equals(targetnode))
-                //{
-                //    Reconstruct_path(path, targetnode);
-                //    return;
-                //}
-
-
-
-                //List<Node> neighbors = new List<Node>();
-                //neighbors = grid.getNeighbors(currentnode);
-
-                //float tentative_g = 0;
-
-                //foreach (Node n in neighbors)
-                //{
-                //    if (closed_set.Contains(n))
-                //        continue;
-
-                //    tentative_g = n.gscore + distance(currentnode, n);
-
-                //    if (!open_set.Contains(n) || tentative_g < n.gscore)
-                //    {
-                //        path[n] = currentnode;
-                //        n.gscore = tentative_g;
-                //        n.fscore = n.gscore + distance(n, targetnode);
-
-                //        if (!open_set.Contains(n))
-                //            open_set.Add(n);
-                //    }
-                //}
             }
         }
     }
@@ -156,9 +119,7 @@ public class Astar : MonoBehaviour {
 
     void Reconstruct_path(Node start, Node target)
     {
-
             List<Node> path = new List<Node>();
-
             Node current = target;
 
             while (current != start)
@@ -168,18 +129,5 @@ public class Astar : MonoBehaviour {
             }
             path.Reverse();
             grid.final_path = path;
-
-
-
-        //List<Node> total_path = new List<Node>();
-        //total_path.Add(current);
-
-        //while (path.ContainsKey(current))
-        //{
-        //    current = path[current];
-        //    total_path.Add(current);
-        //}
-
-        //grid.final_path = total_path;
     }
 }

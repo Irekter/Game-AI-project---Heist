@@ -4,27 +4,28 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour {
 
-    public Rigidbody rigidbody;
+    public Rigidbody rbody;
     public float force;
-	
+
 	// Update is called once per frame
 	void Update () {
 
         if (Input.GetKey("right"))
         {
-            rigidbody.AddForce(force * Time.deltaTime, 0, 0);
+            rbody.AddForce(force * Time.deltaTime, 0, 0);
         }
         if (Input.GetKey("left"))
         {
-            rigidbody.AddForce(- force * Time.deltaTime, 0, 0);
+            rbody.AddForce(-force * Time.deltaTime, 0, 0);
         }
         if (Input.GetKey("up"))
         {
-            rigidbody.AddForce(0, 0, force * Time.deltaTime);
+            rbody.AddForce(0, 0, force * Time.deltaTime);
         }
         if (Input.GetKey("down"))
         {
-            rigidbody.AddForce(0, 0, -force * Time.deltaTime);
+            rbody.AddForce(0, 0, -force * Time.deltaTime);
         }
     }
+
 }
