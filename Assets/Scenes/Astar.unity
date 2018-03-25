@@ -16,10 +16,10 @@ RenderSettings:
   serializedVersion: 8
   m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  m_FogMode: 3
-  m_FogDensity: 0.01
+  m_FogMode: 1
+  m_FogDensity: 0.02
   m_LinearFogStart: 0
-  m_LinearFogEnd: 300
+  m_LinearFogEnd: 100
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
@@ -112,7 +112,7 @@ NavMeshSettings:
     accuratePlacement: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 0}
+  m_NavMeshData: {fileID: 23800000, guid: 45b6c9b15fc0410419589a186ff470f3, type: 2}
 --- !u!1 &23741064
 GameObject:
   m_ObjectHideFlags: 0
@@ -356,8 +356,8 @@ GameObject:
   m_Name: Walls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &154024521
 Transform:
@@ -766,8 +766,8 @@ GameObject:
   m_Name: Walls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &374725365
 Transform:
@@ -944,8 +944,8 @@ GameObject:
   m_Name: Walls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &733260886
 Transform:
@@ -1180,8 +1180,8 @@ GameObject:
   m_Name: Walls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!23 &839232077
 MeshRenderer:
@@ -1685,8 +1685,7 @@ GameObject:
   - component: {fileID: 1358778916}
   - component: {fileID: 1358778915}
   - component: {fileID: 1358778917}
-  - component: {fileID: 1358778919}
-  - component: {fileID: 1358778918}
+  - component: {fileID: 1358778920}
   m_Layer: 0
   m_Name: A star
   m_TagString: Untagged
@@ -1741,7 +1740,7 @@ MonoBehaviour:
   exit: {fileID: 141866641}
   targetradius: 1
   coins: []
---- !u!114 &1358778918
+--- !u!114 &1358778920
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -1749,26 +1748,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1358778914}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5a8a6d13c8a9254699d28bed1632254, type: 3}
+  m_Script: {fileID: 11500000, guid: 909b9b446bad4ac45b525a53a3cea132, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1538538892}
-  exit: {fileID: 141866644}
-  speed: 0.1
-  endxnodeearly: 1
---- !u!114 &1358778919
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1358778914}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa3d095fbc1a90f499b98b848baeb5f4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rbody: {fileID: 0}
-  force: 500
 --- !u!1 &1362636327
 GameObject:
   m_ObjectHideFlags: 0
@@ -1894,6 +1877,10 @@ Prefab:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 75c39714c6d70c641b6e0775a73b6844, type: 2}
+    - target: {fileID: 1068962285864446, guid: 574783f9fb0f3a34288122820ace0788, type: 2}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 574783f9fb0f3a34288122820ace0788, type: 2}
   m_IsPrefabParent: 0
@@ -2085,6 +2072,32 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1470891332}
   m_Mesh: {fileID: 4300000, guid: dd8ebbdcc572196408a6805681c6a297, type: 3}
+--- !u!1 &1500728073 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1956848902904474, guid: 03b2154d3a214bb45885f9adb406d52f,
+    type: 2}
+  m_PrefabInternal: {fileID: 1538538891}
+--- !u!195 &1500728074
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1500728073}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1001 &1538538891
 Prefab:
   m_ObjectHideFlags: 0
@@ -2141,6 +2154,11 @@ Prefab:
       propertyPath: m_LocalScale.x
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 95670962228007478, guid: 03b2154d3a214bb45885f9adb406d52f,
+        type: 2}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: f5382181bfcdc4b4fb288e05f7d6b105, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 03b2154d3a214bb45885f9adb406d52f, type: 2}
   m_IsPrefabParent: 0
@@ -2267,6 +2285,38 @@ Prefab:
     - target: {fileID: 23363973065259950, guid: 5dac6c95ec97f364ab589b913c75db82,
         type: 2}
       propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1344969975052228, guid: 5dac6c95ec97f364ab589b913c75db82, type: 2}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1843445605931828, guid: 5dac6c95ec97f364ab589b913c75db82, type: 2}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1433903711010128, guid: 5dac6c95ec97f364ab589b913c75db82, type: 2}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1333977378006760, guid: 5dac6c95ec97f364ab589b913c75db82, type: 2}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1344969975052228, guid: 5dac6c95ec97f364ab589b913c75db82, type: 2}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1843445605931828, guid: 5dac6c95ec97f364ab589b913c75db82, type: 2}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1433903711010128, guid: 5dac6c95ec97f364ab589b913c75db82, type: 2}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1333977378006760, guid: 5dac6c95ec97f364ab589b913c75db82, type: 2}
+      propertyPath: m_NavMeshLayer
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []

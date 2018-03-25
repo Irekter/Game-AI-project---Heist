@@ -7,6 +7,9 @@
 4. Improved game assets
 5. Improved player movement by changing heuristic to Manhattan distance to smoothen the player movements.
 6. Implemented automatic pathfollowing with Euclidean distance as measure to find closest target.
+7. Added NavMesh to bake the scene
+8. Created NavMeshAgent to navigate through the scene
+9. Designed Animatior for player movement
 
 ![Pathfinding using A star algorithm](https://github.com/prasadchelsea33/Game-AI-project---Heist/blob/astar/GIFS/pathfinding.gif)
 
@@ -15,3 +18,4 @@
 2. ~~Add logic for automated player movement to the selected target~~
 3. Add different types of targets like Drawers, Safe, Alarm-based locks.
 4. Improve automatic pathfollowing by replacing Euclidean distance to fscore as measure to find closest target.
+5. Add scene for Planning the Heist
