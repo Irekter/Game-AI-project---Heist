@@ -42,11 +42,9 @@ public class Astar : MonoBehaviour {
         GameObject toberemoved = null;
         GameObject coin=null;
 
-        // FIX THIS ASAP
         if (trgts.Count == 0)
             trgts.Add(exit);
-        //else
-        //    Application.Quit();
+
 
         foreach (GameObject end in trgts)
         {
@@ -60,7 +58,7 @@ public class Astar : MonoBehaviour {
 
         if (Vector3.Distance(target.position, start.position) <= targetradius)
         {
-            System.Threading.Thread.Sleep(1000);
+            //System.Threading.Thread.Sleep(1000);
             visited.Add(target);
             trgts.Remove(toberemoved);
             coin = toberemoved.transform.GetChild(0).gameObject;
