@@ -15,7 +15,7 @@ public class move : MonoBehaviour {
     {
         anim = player.GetComponent<Animator>();
         grid = GetComponent<Grid>();
-        agent = player.GetComponent<NavMeshAgent>();
+		agent = player.GetComponent<NavMeshAgent>();
     }
 
     void Update()
@@ -25,13 +25,14 @@ public class move : MonoBehaviour {
 
     void autoMove()
     {
-        if (grid.final_path.Count >= 1)
-        {
-            anim.SetInteger("moving", 1);
-            Node currentnode = grid.final_path[0];
-            grid.final_path.RemoveAt(0);
-            agent.destination = currentnode.position;
-        }
+		if (grid.final_path.Count >= 1) {
+			anim.SetInteger ("moving", 1);
+			Node currentnode = grid.final_path [0];
+			grid.final_path.RemoveAt (0);
+			agent.destination = currentnode.position;
+		} else {
+			Astar.instance.curr_weight = 0;
+		}
     }
 
 }
