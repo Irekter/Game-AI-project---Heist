@@ -8,9 +8,8 @@ public class GameManager : MonoBehaviour {
     public bool AutoMove;
     public GameObject astar;
 
-
-	// Update is called once per frame
-	void Update () {
+    // Update is called once per frame
+    void Update () {
 		if(Input.GetKey(KeyCode.Escape))
             SceneManager.LoadScene("Menu");
 
