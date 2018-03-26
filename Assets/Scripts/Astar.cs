@@ -24,6 +24,7 @@ public class Astar : MonoBehaviour {
         grid = GetComponent<Grid>();
     }
 
+
     private void Update()
     {
         if (exit != null && exit.transform.childCount > 0)
@@ -34,6 +35,7 @@ public class Astar : MonoBehaviour {
         else
             Application.Quit();
     }
+
 
     public Transform targetSelector()
     {
@@ -117,11 +119,11 @@ public class Astar : MonoBehaviour {
 
     float distance(Node node1, Node node2)
     {
-        //return Vector3.Distance(node1.position, node2.position);
+        return Vector3.Distance(node1.position, node2.position);
         /* MANHATTAN DISTANCE*/
-        float result = Mathf.Abs(node1.position.x - node2.position.x) + Mathf.Abs(node1.position.y - node2.position.y)
-            + Mathf.Abs(node1.position.z - node2.position.z);
-        return result;
+        //float result = Mathf.Abs(node1.position.x - node2.position.x) + Mathf.Abs(node1.position.y - node2.position.y)
+        //    + Mathf.Abs(node1.position.z - node2.position.z);
+        //return result;
     }
 
     void Reconstruct_path(Node start, Node target)

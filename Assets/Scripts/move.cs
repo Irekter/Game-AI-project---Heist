@@ -9,6 +9,8 @@ public class move : MonoBehaviour {
     private Animator anim;
     Grid grid;
     private NavMeshAgent agent;
+
+
     private void Awake()
     {
         anim = player.GetComponent<Animator>();
@@ -26,9 +28,10 @@ public class move : MonoBehaviour {
         if (grid.final_path.Count >= 1)
         {
             anim.SetInteger("moving", 1);
-            Node currentnode = grid.final_path[grid.final_path.Count - 1];
+            Node currentnode = grid.final_path[0];
             grid.final_path.RemoveAt(0);
             agent.destination = currentnode.position;
         }
     }
+
 }

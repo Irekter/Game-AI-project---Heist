@@ -298,7 +298,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 64ae43b6b6e887545ad0a92b6b491ec8, type: 2}
+  - {fileID: 2100000, guid: 10f19c87f87c47e4aa86f0a4666ec74d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1704,7 +1704,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8931c47f55435344f87940ffbed3f261, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  node_size: 0.3
+  node_size: 0.5
   gridSize: {x: 30, y: 30}
   obstacles:
     serializedVersion: 2
@@ -2086,7 +2086,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 4
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -2159,6 +2159,16 @@ Prefab:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: f5382181bfcdc4b4fb288e05f7d6b105, type: 2}
+    - target: {fileID: 114988570776579054, guid: 03b2154d3a214bb45885f9adb406d52f,
+        type: 2}
+      propertyPath: runSpeed
+      value: 1.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 114988570776579054, guid: 03b2154d3a214bb45885f9adb406d52f,
+        type: 2}
+      propertyPath: turnSpeed
+      value: 120
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 03b2154d3a214bb45885f9adb406d52f, type: 2}
   m_IsPrefabParent: 0
