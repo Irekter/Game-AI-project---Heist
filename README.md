@@ -15,7 +15,7 @@
 ![Pathfinding using A star algorithm](https://github.com/prasadchelsea33/Game-AI-project---Heist/blob/astar/GIFS/pathfinding.gif)
 
 ### Planning Scene
-![Planning Scene]()
+![Planning Scene](https://github.com/prasadchelsea33/Game-AI-project---Heist/blob/astar/Assets/Images/PlanningPhase.PNG)
 
 ## Work to be done before Milestone 1:
 1. ~~Improve assets, look and feel~~
