@@ -32,6 +32,10 @@ public class move : MonoBehaviour {
             grid.final_path.RemoveAt(0);
             agent.destination = currentnode.position;
         }
+        else
+        {
+            Astar.instance.curr_weight = 0;
+        }
     }
 
 }

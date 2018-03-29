@@ -6,15 +6,25 @@ using System.Linq;
 
 public class Astar : MonoBehaviour {
 
+    public static Astar instance;
     public Transform start;
     Transform target;
     Grid grid;
     public GameObject[] targets;
     public GameObject exit;
     List<GameObject> trgts;
-    public float targetradius=2f;
+    public float targetradius = 2f;
     public GameObject[] coins;
+    public int curr_weight;
+    public int CAPACITY = 10;
+    public int WEIGTH_VALUE = 10;
 
+
+    void Start()
+    {
+        instance = this;
+        curr_weight = 0;
+    }
     private void Awake()
     {
         targets = GameObject.FindGameObjectsWithTag("End");
@@ -29,7 +39,14 @@ public class Astar : MonoBehaviour {
     {
         if (exit != null && exit.transform.childCount > 0)
         {
-            target = targetSelector();
+            if (curr_weight < CAPACITY)
+            {
+                target = targetSelector();
+            }
+            else
+            {
+                target = exit.transform;
+            }
             pathfinder(start.position, target.position);
         }
         else
@@ -66,6 +83,7 @@ public class Astar : MonoBehaviour {
             coin = toberemoved.transform.GetChild(0).gameObject;
             Destroy(coin);
             mindistance = int.MaxValue;
+            curr_weight += WEIGTH_VALUE;
         }
         return target;
     }
@@ -120,10 +138,6 @@ public class Astar : MonoBehaviour {
     float distance(Node node1, Node node2)
     {
         return Vector3.Distance(node1.position, node2.position);
-        /* MANHATTAN DISTANCE*/
-        //float result = Mathf.Abs(node1.position.x - node2.position.x) + Mathf.Abs(node1.position.y - node2.position.y)
-        //    + Mathf.Abs(node1.position.z - node2.position.z);
-        //return result;
     }
 
     void Reconstruct_path(Node start, Node target)
