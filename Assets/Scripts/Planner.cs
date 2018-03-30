@@ -5,7 +5,7 @@ using UnityEngine;
 public class Planner : MonoBehaviour {
 
     List<GameObject> selectedtarget = new List<GameObject>();
-    Renderer renderer;
+    Renderer render;
     public Material newmaterial;
 
 
@@ -21,8 +21,8 @@ public class Planner : MonoBehaviour {
                 if (hit.transform.tag == "End" && !selectedtarget.Contains(hit.transform.gameObject))
                 {
                     selectedtarget.Add(hit.transform.gameObject);
-                    renderer = hit.transform.gameObject.GetComponent<Renderer>();
-                    renderer.material = newmaterial;
+                    render = hit.transform.gameObject.GetComponent<Renderer>();
+                    render.material = newmaterial;
                 }
             }
         }

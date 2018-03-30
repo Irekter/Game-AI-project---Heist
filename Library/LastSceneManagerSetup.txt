@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/Planning.unity
+- path: Assets/Scenes/Astar.unity
   isLoaded: 1
   isActive: 1

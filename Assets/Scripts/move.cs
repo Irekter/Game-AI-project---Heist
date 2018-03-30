@@ -9,30 +9,34 @@ public class move : MonoBehaviour {
     private Animator anim;
     Grid grid;
     private NavMeshAgent agent;
-
+    Astar astar;
 
     private void Awake()
     {
         anim = player.GetComponent<Animator>();
         grid = GetComponent<Grid>();
-		agent = player.GetComponent<NavMeshAgent>();
+		    agent = player.GetComponent<NavMeshAgent>();
     }
+
+
 
     void Update()
     {
-        autoMove();
+        autoMove(grid.final_path);
     }
 
-    void autoMove()
+    void autoMove(List<Node> mover)
     {
-		if (grid.final_path.Count >= 1) {
-			anim.SetInteger ("moving", 1);
-			Node currentnode = grid.final_path [0];
-			grid.final_path.RemoveAt (0);
-			agent.destination = currentnode.position;
-		} else {
-			Astar.instance.curr_weight = 0;
-		}
+        Debug.Log(mover.Count);
+        if (mover.Count >= 2)
+        {
+            anim.SetInteger("moving", 1);
+            agent.destination = mover[1].position;
+            mover.RemoveAt(0);
+        }
+        //else
+        //{
+        //    Astar.instance.curr_weight = 0;
+        //}
     }
-
 }
