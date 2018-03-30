@@ -9,6 +9,7 @@ public class Astar : MonoBehaviour {
 
     public static Astar instance;
     public Transform start;
+
     Transform target;
     Grid grid;
     public GameObject[] targets;
@@ -16,6 +17,7 @@ public class Astar : MonoBehaviour {
     List<GameObject> trgts;
     public float targetradius = 2f;
     public GameObject[] coins;
+
     public int curr_weight;
     public int CAPACITY = 10;
     public int WEIGTH_VALUE = 10;
@@ -23,8 +25,12 @@ public class Astar : MonoBehaviour {
 
     public List<Node> intpath;
 
+	void Start() {
+		instance = this;
+		curr_weight = 0;
+	}
 
-    private void Awake()
+	private void Awake()
     {
         targets = GameObject.FindGameObjectsWithTag("End");
         exit = GameObject.FindGameObjectWithTag("Exit");
@@ -67,8 +73,10 @@ public class Astar : MonoBehaviour {
         GameObject toberemoved = null;
         GameObject coin=null;
 
-        if (trgts.Count == 0)
-            trgts.Add(exit);
+		if (trgts.Count == 0) 
+		{
+			trgts.Add (exit);
+		}
 
 
         foreach (GameObject end in trgts)
@@ -84,12 +92,12 @@ public class Astar : MonoBehaviour {
         if (Vector3.Distance(target.position, start.position) <= targetradius)
         {
             //System.Threading.Thread.Sleep(1000);
-            visited.Add(target);
-            trgts.Remove(toberemoved);
-            coin = toberemoved.transform.GetChild(0).gameObject;
-            Destroy(coin);
-            mindistance = int.MaxValue;
-            curr_weight += WEIGTH_VALUE;
+			      visited.Add (target);
+			      trgts.Remove (toberemoved);
+			      coin = toberemoved.transform.GetChild (0).gameObject;
+			      Destroy (coin);
+			      mindistance = int.MaxValue;
+			      curr_weight += WEIGTH_VALUE;
         }
         return target;
     }
@@ -122,8 +130,10 @@ public class Astar : MonoBehaviour {
 
             foreach (Node n in neighbors)
             {
-                if (closed_set.Contains(n) || n.isobstacle)
-                    continue;
+				if (closed_set.Contains (n) || n.isobstacle) 
+				{
+					continue;
+				}
 
                 float newPathCost = currentnode.gscore + distance(currentnode, n);
 
@@ -133,8 +143,10 @@ public class Astar : MonoBehaviour {
                     n.hscore = distance(n, targetnode);
                     n.parent = currentnode;
 
-                    if (!open_set.Contains(n))
-                        open_set.Add(n);
+					if (!open_set.Contains (n)) 
+					{
+						open_set.Add (n);
+					}
                 }
             }
         }
@@ -171,7 +183,6 @@ public class Astar : MonoBehaviour {
         path.RemoveAt(0);
         path.Reverse();
         
-
         RaycastHit info;
 
         while (path.Count > 0)

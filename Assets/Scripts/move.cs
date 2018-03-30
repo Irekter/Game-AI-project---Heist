@@ -15,8 +15,7 @@ public class move : MonoBehaviour {
     {
         anim = player.GetComponent<Animator>();
         grid = GetComponent<Grid>();
-        agent = player.GetComponent<NavMeshAgent>();
-        astar = player.GetComponent<Astar>();
+		    agent = player.GetComponent<NavMeshAgent>();
     }
 
 
