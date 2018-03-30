@@ -11,6 +11,7 @@
 8. Created NavMeshAgent to navigate through the scene
 9. Designed Animator for player movement
 10. Added Planning scene into the game (doesn't implement the plan yet)
+11. Implemented Path Smoothing using RayCasting
 
 ![Pathfinding using A star algorithm](https://github.com/prasadchelsea33/Game-AI-project---Heist/blob/astar/GIFS/pathfinding.gif)
 

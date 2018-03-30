@@ -40,13 +40,6 @@ public class Astar : MonoBehaviour {
     }
 
 
-    void Start()
-    {
-        instance = this;
-        curr_weight = 0;
-    }
-
-
     private void Update()
     {
         if (exit != null && exit.transform.childCount > 0)

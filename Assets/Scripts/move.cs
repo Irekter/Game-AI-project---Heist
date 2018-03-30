@@ -27,7 +27,6 @@ public class move : MonoBehaviour {
 
     void autoMove(List<Node> mover)
     {
-        Debug.Log(mover.Count);
         if (mover.Count >= 2)
         {
             anim.SetInteger("moving", 1);
