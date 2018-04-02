@@ -7,30 +7,25 @@ public class Loot : IComparable <Loot>
 {
 	public int item_weight;
 	public int item_value;   
-    public float worth;
-	public bool is_visted;
-	public bool is_alarmed;
-	public bool is_secured;
-	public bool is_empty;
-	public bool is_opened;
+    public float item_worth;
 	
-    public Loot(int value_item, int weight, bool alarmed, bool secured, bool filled)
+    public Loot(int _value_item, int _weight)
     {
-        item_weight = weight;
-	    item_value = value_item;   
-		worth = item_value / item_weight;
-		is_visted = false;
-		is_alarmed = alarmed;
-		is_secured = secured;
-		is_empty = !filled;
-		is_opened = false;
+ 		this.item_weight = _weight;
+	    this.item_value = _value_item;   
+		if(_value_item != 0) {
+			this.item_worth = _weight / _value_item;
+		} 
+		else {
+			this.item_worth = 0;
+		}
     }
-
+	
     public int CompareTo(Loot l)
     {
-        if (this.worth < l.worth)
+        if (this.item_worth < l.item_worth)
             return -1;
-        else if (this.worth > l.worth)
+        else if (this.item_worth > l.item_worth)
             return 1;
         else
             return 0;

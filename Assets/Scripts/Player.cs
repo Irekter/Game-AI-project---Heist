@@ -16,13 +16,12 @@ public class Player {
 		current_weight = 0;
 	}
 
-    public bool pickNewItem(Loot l)
+    public bool pickNewItem(Treasure t)
     {
-       if((current_weight + l.item_weight) <= CAPACITY) { 
+       Loot l = new Loot(t.item_value, t.item_weight);
+	   if((current_weight + l.item_weight) <= CAPACITY) 
+	   { 
 			current_weight += l.item_weight;
-			l.is_visted = true;
-			l.is_empty = true;
-			l.is_opened = true;
 			player_loot.Add(l);
 			return true;
 	   } 
@@ -31,7 +30,8 @@ public class Player {
 	
 	public bool isFull()
 	{
-		if(current_weight >= CAPACITY) {
+		if(current_weight >= CAPACITY) 
+		{
 			return true;
 		}
 		return false;
@@ -42,34 +42,29 @@ public class Player {
 		return ((current_weight * 100) / CAPACITY);
 	}
 	
-	public bool exchange_item(Loot l) 
+	public bool exchange_item(Treasure t) 
 	{
-		if((current_weight + l.item_value) <= CAPACITY) { 
+		Loot l = new Loot(t.item_value, t.item_weight);
+		if((current_weight + l.item_value) <= CAPACITY) 
+		{ 
 			current_weight += l.item_weight;
-			l.is_visted = true;
-			l.is_empty = true;
-			l.is_opened = true;
 			player_loot.Add(l);
 			return  true;
-	    } 
-				
-		foreach(Loot lu in player_loot) {
-			if(lu.worth < l.worth) {
-		     	if(lu.item_weight <= l.item_weight) {
+	    } 		
+		foreach(Loot lu in player_loot) 
+		{
+			if(lu.item_worth < l.item_worth) 
+			{
+		     	if(lu.item_weight <= l.item_weight) 
+				{
 					current_weight = current_weight + l.item_weight - lu.item_weight;
-					lu.is_visted = true;
-					lu.is_empty = true;
-					lu.is_opened = true;
 					lu.item_weight = l.item_weight;
 					lu.item_value = l.item_value;   
-					lu.worth = l.worth;
-					lu.is_secured = l.is_secured;
-					lu.is_alarmed = l.is_alarmed;				
+					lu.item_worth = l.item_worth;
 					return true;
 				} 
 			}
 		}
-		
 		return false;
 	}
 }
