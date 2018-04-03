@@ -6,14 +6,21 @@ using UnityEngine;
 public class Player {
 	
     public static Player instance;
-	private int CAPACITY = 22;
-    private int current_weight;
+	public int CAPACITY;
+    public int current_weight;
 	private List<Loot> player_loot; 
-   
+    /*
 	void Start() 
 	{
 		instance = this;
 		current_weight = 0;
+	}
+	*/
+	
+	public Player(int cap){
+		this.CAPACITY = cap;
+		this.current_weight = 0;
+		this.player_loot = new List<Loot>();
 	}
 
     public bool pickNewItem(Treasure t)

@@ -18,8 +18,6 @@ public class move : MonoBehaviour {
 		    agent = player.GetComponent<NavMeshAgent>();
     }
 
-
-
     void Update()
     {
         autoMove(grid.final_path);
@@ -33,9 +31,5 @@ public class move : MonoBehaviour {
             agent.destination = mover[1].position;
             mover.RemoveAt(0);
         }
-        //else
-        //{
-        //    Astar.instance.curr_weight = 0;
-        //}
     }
 }

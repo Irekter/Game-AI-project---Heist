@@ -9,7 +9,7 @@ public class Astar : MonoBehaviour {
 
     public static Astar instance;
     public Transform start;
-
+    public Player p;
     Transform target;
     Grid grid;
     public GameObject[] targets;
@@ -17,17 +17,14 @@ public class Astar : MonoBehaviour {
     List<GameObject> trgts;
     public float targetradius = 2f;
     public GameObject[] coins;
-
-    public int curr_weight;
-    public int CAPACITY = 10;
-    public int WEIGTH_VALUE = 10;
     public LayerMask obs;
 
     public List<Node> intpath;
 
-	void Start() {
+	void Start() 
+	{
 		instance = this;
-		curr_weight = 0;
+		p = new Player(10);
 	}
 
 	private void Awake()
@@ -44,18 +41,27 @@ public class Astar : MonoBehaviour {
     {
         if (exit != null && exit.transform.childCount > 0)
         {
-            //if (curr_weight < CAPACITY)
-            //{
-                target = targetSelector();
-            //}
-            //else
-            //{
-            //    target = exit.transform;
-            //}
+            if (p.current_weight > p.CAPACITY)
+            {
+                target = exit.transform;
+				Debug.Log("Exiting");
+				if((start.position - target.position).magnitude <= 1)
+				{
+					Debug.Log("Making Zero");
+					target = targetSelector();
+					p.current_weight = 0;
+				}
+            }
+            else
+            {
+				target = targetSelector();
+            }
             grid.final_path = pathfinder(start.position, target.position);
         }
         else
+		{
             Application.Quit();
+		}
     }
 
 
@@ -90,7 +96,7 @@ public class Astar : MonoBehaviour {
 			      coin = toberemoved.transform.GetChild (0).gameObject;
 			      Destroy (coin);
 			      mindistance = int.MaxValue;
-			      curr_weight += WEIGTH_VALUE;
+			      p.current_weight += 5;
         }
         return target;
     }
@@ -201,5 +207,4 @@ public class Astar : MonoBehaviour {
 
        return smooth_path;
     }
-
 }

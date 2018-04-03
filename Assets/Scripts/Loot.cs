@@ -13,10 +13,12 @@ public class Loot : IComparable <Loot>
     {
  		this.item_weight = _weight;
 	    this.item_value = _value_item;   
-		if(_value_item != 0) {
+		if(_value_item != 0) 
+		{
 			this.item_worth = _weight / _value_item;
 		} 
-		else {
+		else 
+		{
 			this.item_worth = 0;
 		}
     }
@@ -24,10 +26,13 @@ public class Loot : IComparable <Loot>
     public int CompareTo(Loot l)
     {
         if (this.item_worth < l.item_worth)
+		{
             return -1;
-        else if (this.item_worth > l.item_worth)
+		}
+		if (this.item_worth > l.item_worth)
+		{
             return 1;
-        else
-            return 0;
+		}
+		return 0;
     }
 }
