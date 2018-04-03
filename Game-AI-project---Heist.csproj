@@ -296,17 +296,21 @@
   <ItemGroup>
     <Compile Include="Assets\Bullet.cs" />
     <Compile Include="Assets\C&amp;C_Pack\Goblin_rouge\Script\Goblin_ro_ctrl.cs" />
+    <Compile Include="Assets\Scripts\AlarmChest.cs" />
     <Compile Include="Assets\Scripts\Astar.cs" />
     <Compile Include="Assets\Scripts\DonePlanning.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\Grid.cs" />
+    <Compile Include="Assets\Scripts\Loot.cs" />
     <Compile Include="Assets\Scripts\MainMenu.cs" />
     <Compile Include="Assets\Scripts\move.cs" />
     <Compile Include="Assets\Scripts\Node.cs" />
     <Compile Include="Assets\Scripts\PassPlans.cs" />
     <Compile Include="Assets\Scripts\Planner.cs" />
     <Compile Include="Assets\Scripts\PlanningDone.cs" />
+    <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\Scripts\PQ.cs" />
+    <Compile Include="Assets\Scripts\Treasure.cs" />
     <Compile Include="Assets\Scripts\Turret.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01_UGUI.cs" />
@@ -341,6 +345,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeB.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexZoom.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\WarpTextExample.cs" />
+    <Compile Include="Assets\Timer.cs" />
     <Compile Include="Assets\turret.cs" />
   </ItemGroup>
   <ItemGroup>
