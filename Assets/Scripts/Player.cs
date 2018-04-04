@@ -4,105 +4,134 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-
-
 public class Player : MonoBehaviour {
 	
     public static Player instance;
 	public int CAPACITY = 20;
-    public int current_weight;
+    private int gold_weight;
+	private int gold_value;
 	private List<Loot> player_loot;
-    Treasure current_target;
+    private Vector3 exit_target;
     private float time_to_exit;
-    public int agent_type = 1;
+    public bool flee;
+	public int agent_type = 1;
     NavMeshAgent agent;
-    private float delay_time = 0;
-    private bool looping = false;
 
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
     }
 
-
+	
     void Start() 
 	{
 		instance = this;
-		current_weight = 0;
+		gold_weight = 0;
+		gold_value = 0;
         this.player_loot = new List<Loot>();
+		exit_target = GameObject.FindGameObjectWithTag ("Exit").transform.position;
+		flee = false;
+		time_to_exit = 10;
     }
 
     private void Update()
     {
         float velocity = agent.velocity.magnitude;
-        //time_to_exit = Vector3.Distance(current_target.position, gameObject.transform.position) / velocity;
-        //Debug.Log(time_to_exit);
+		if(velocity != 0) 
+		{
+			time_to_exit = ((agent.transform.position - exit_target).magnitude)/velocity;
+			time_to_exit += (float)1.5;
+		} 
+		else 
+		{
+			time_to_exit = 10;
+		}
+		if (time_to_exit >= Timer.instance.timelimit) 
+		{
+			flee = true;
+		} else 
+		{
+			flee = false;
+		}
     }
 
-    public void dropTreasureAtExit()
+	public int get_player_gold_weight()
+	{
+		return gold_weight; 
+	}
+
+	public int get_player_gold_value()
+	{
+		return gold_value; 
+	}
+
+	public float get_time_to_exit()
+	{
+		return time_to_exit; 
+	}
+
+    public void drop_treasure_at_exit()
     {
-        current_weight = 0;
+        gold_weight = 0;
         player_loot.Clear();
     }
-
-    public bool pickNewItem(Treasure t)
-    {
-       Loot loot = new Loot(t.item_value, t.item_weight);
-       t.visited = true;
-
-       if ((current_weight + loot.item_weight) <= CAPACITY) 
-	   { 
-			current_weight += loot.item_weight;
-			player_loot.Add(loot);
-            t.empty_treasure();
-			return true;
-	   } 
-	   return false;
-    }
-	
-	public bool isFull()
+		
+	public bool is_accepting_loot(int loot_weight)
 	{
-		if(current_weight >= CAPACITY) 
+		if((gold_weight + loot_weight) <= CAPACITY) 
 		{
 			return true;
 		}
 		return false;
 	}
 	
-	public int percentFull()
+	
+	public bool is_full()
 	{
-		return ((current_weight * 100) / CAPACITY);
+		if(gold_weight >= CAPACITY) 
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	public int percent_full()
+	{
+		return ((gold_weight * 100) / CAPACITY);
 	}
 
-
-	public bool exchange_item(Treasure t) 
+	public bool pick_new_loot(Loot treasure_loot)
 	{
-		Loot loot = new Loot(t.item_value, t.item_weight);
-        t.visited = true;
+		if (is_accepting_loot(treasure_loot.loot_weight)) 
+		{ 
+			gold_weight += treasure_loot.loot_weight;
+			gold_value += treasure_loot.loot_value;
+			player_loot.Add(treasure_loot);
+			return true;
+		} 
+		return false;
+	}
+		
+	public bool exchange_loot(Loot treasure_loot) 
+	{
+        // Pickup the item if we have space
+		//Debug.Log("Exchange: " + treasure_loot.loot_weight + " " + treasure_loot.loot_value);
 
-        // normal pickup
-        if ((current_weight + loot.item_weight) <= CAPACITY) 
+		if(pick_new_loot(treasure_loot)) 
 		{
-            delay_time = 5;
-            while (looping) { };
-            current_weight += loot.item_weight;
-			player_loot.Add(loot);
-            t.empty_treasure();
-            return true;
-	    }
-        
+			return true;
+		}
         foreach (Loot lu in player_loot) 
 		{
-            
-            if (lu.item_worth < loot.item_worth) 
+			if (lu.loot_worth < treasure_loot.loot_worth) 
 			{
-		     	if((current_weight + loot.item_weight - lu.item_weight) <= CAPACITY) 
+				if((gold_weight + treasure_loot.loot_weight - lu.loot_weight) <= CAPACITY) 
 				{   
-                    current_weight = current_weight + loot.item_weight - lu.item_weight;
-					lu.item_weight = loot.item_weight;
-					lu.item_value = loot.item_value;   
-					lu.item_worth = loot.item_worth;
-                    t.empty_treasure();
+					gold_weight = gold_weight + treasure_loot.loot_weight - lu.loot_weight;
+					gold_value = gold_value + treasure_loot.loot_value - lu.loot_value;
+					lu.loot_weight = treasure_loot.loot_weight;
+					lu.loot_value = treasure_loot.loot_value;   
+					lu.loot_worth = treasure_loot.loot_worth;
                     return true;
                 } 
 			}

@@ -41,7 +41,11 @@ public class Astar : MonoBehaviour {
     {
         if (exit != null && exit.transform.childCount > 0)
         {
-            if ((Player.instance.current_weight >= Player.instance.CAPACITY) || (trgts.Count == 0))
+			if(Player.instance.flee) 
+			{
+				target = exit.transform;
+			}
+			else if (Player.instance.is_full() || (trgts.Count == 0))
             {
                 target = exit.transform;
 				
@@ -52,9 +56,8 @@ public class Astar : MonoBehaviour {
                         trgts.AddRange(opened_treasures);
                         opened_treasures.Clear();
                     }
-
                     target = targetSelector();
-                    Player.instance.dropTreasureAtExit();
+                    Player.instance.drop_treasure_at_exit();
                 }
             }
             else
@@ -75,14 +78,13 @@ public class Astar : MonoBehaviour {
         float mindistance = int.MaxValue;
         List<Transform> visited = new List<Transform>();
         GameObject toberemoved = null;
-        GameObject coin=null;
+        GameObject coin = null;
 
 		if (trgts.Count == 0) 
 		{
 			trgts.Add (exit);
         }
-
-
+		
         foreach (GameObject end in trgts)
         {
             if (Vector3.Distance(end.transform.position, start.position) < mindistance)
@@ -108,19 +110,20 @@ public class Astar : MonoBehaviour {
             //}
             if (Player.instance.agent_type == 1)
             {
-                // agent 2
                 visited.Add(target);
                 trgts.Remove(toberemoved);
                 mindistance = int.MaxValue;
                 if (target.gameObject != exit)
                 {
-                    if (Player.instance.exchange_item(target.GetComponent<Treasure>()))
+					Loot treasure_loot = target.GetComponent<Treasure>().open_treasure();
+					if (Player.instance.exchange_loot(treasure_loot))
                     {
                         destroyCoin(toberemoved, coin);
+						target.GetComponent<Treasure>().empty_treasure();
                     }
                     else
                     {
-                        if (toberemoved.GetComponent<Treasure>().item_weight <= Player.instance.CAPACITY)
+                        if (toberemoved.GetComponent<Treasure>().gold_weight <= Player.instance.CAPACITY)
                         {
                             opened_treasures.Add(toberemoved);
                         }
@@ -186,9 +189,7 @@ public class Astar : MonoBehaviour {
                 }
             }
         }
-
-        Debug.Log("No Path");
-        return null;
+		return null;
     }
 
     float distance(Node node1, Node node2)

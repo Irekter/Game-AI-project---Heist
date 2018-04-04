@@ -5,50 +5,53 @@ using UnityEngine;
 
 public class Treasure : MonoBehaviour
 {
-	public int item_weight = 0;
-	public int item_value = 0;   
-    public int looting_time = 0;
-
-    private float item_worth = 0;
-
-	public bool visited = false;
+	public int gold_weight = 5;
+	public int gold_value = 10;   
+    public int looting_time = 2;
+    public int breaking_time = 2;
+    private float gold_worth = 0;
 	public bool alarmed = false;
 	public bool secured = false;
-	public bool opened = false;
 
     private void Start()
     {
-        setItemWorth();
+        set_gold_worth();
+		set_looting_time();
     }
 
-
-    private void Update()
+    private void set_gold_worth()
     {
-        setItemWorth();
-    }
-
-    void setItemWorth()
-    {
-        if (item_weight != 0)
+        if (gold_weight != 0)
         {
-            item_worth = item_value / item_weight;
+            gold_worth = gold_value / gold_weight;
         }
         else
         {
-            item_worth = 0;
+            gold_worth = 0;
         }
     }
-
+	
+	private void set_looting_time()
+    {
+		looting_time = gold_weight / 10;
+    }
 
     public void empty_treasure()
 	{
-		item_value = 0;
-        item_weight = 0;
-		opened = true;
-		looting_time = 0;		
+		Timer.instance.timelimit -= looting_time;
+		gold_value = 0;
+        gold_weight = 0;
+		looting_time = 0;
 	}
 	
-	
+	public Loot open_treasure()
+	{
+		Loot treasure_loot = new Loot(gold_value, gold_weight);
+		Timer.instance.timelimit -= breaking_time;
+		breaking_time = 0;
+		return treasure_loot;
+	}
+		
 	// Varun's Alarmed Treasure Code
 	/*
 	

@@ -5,31 +5,31 @@ using UnityEngine;
 
 public class Loot : IComparable <Loot>
 {
-	public int item_weight;
-	public int item_value;   
-    public float item_worth;
+	public int loot_weight;
+	public int loot_value;   
+    public float loot_worth;
 	
-    public Loot(int _value_item, int _weight)
+    public Loot(int _item_value, int _weight)
     {
- 		this.item_weight = _weight;
-	    this.item_value = _value_item;   
+ 		this.loot_weight = _weight;
+	    this.loot_value = _item_value;   
 		if(_weight != 0) 
 		{
-			this.item_worth =  (float)_value_item / (float)_weight;
+			this.loot_worth =  (float)_item_value / (float)_weight;
 		} 
 		else 
 		{
-			this.item_worth = 0;
+			this.loot_worth = 0;
 		}
     }
 	
     public int CompareTo(Loot l)
     {
-        if (this.item_worth < l.item_worth)
+        if (this.loot_worth < l.loot_worth)
 		{
             return -1;
 		}
-		if (this.item_worth > l.item_worth)
+		if (this.loot_worth > l.loot_worth)
 		{
             return 1;
 		}
