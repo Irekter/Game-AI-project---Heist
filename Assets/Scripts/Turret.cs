@@ -17,6 +17,7 @@ public class Turret : MonoBehaviour
     public float fireCtdwn = 0f;
 
     public GameObject bulletPrefab;
+    public GameObject alert;
     public Transform firePoint;
 
     // Use this for initialization
@@ -64,6 +65,7 @@ public class Turret : MonoBehaviour
     {
         if(target==null)
         {
+            alert.SetActive(false);
             return;
         }
 
@@ -73,6 +75,7 @@ public class Turret : MonoBehaviour
         Vector3 rotation = Quaternion.Lerp(rotate.rotation,lookRotation,Time.deltaTime*turnSpeed).eulerAngles;
         rotate.rotation = Quaternion.Euler(0f, rotation.y, 0f);
 
+        alert.SetActive(true);
 
         if(fireCtdwn<=0)
         {
