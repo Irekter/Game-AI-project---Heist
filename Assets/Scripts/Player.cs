@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+
+
 public class Player : MonoBehaviour {
 	
     public static Player instance;
@@ -71,7 +73,8 @@ public class Player : MonoBehaviour {
 	{
 		return ((current_weight * 100) / CAPACITY);
 	}
-	
+
+
 	public bool exchange_item(Treasure t) 
 	{
 		Loot loot = new Loot(t.item_value, t.item_weight);
