@@ -11,6 +11,10 @@ public class GameManager : MonoBehaviour {
     public GameObject astar;
     public Text gameover;
 
+    private void Awake()
+    {
+        
+    }
     void Update () {
 		if(Input.GetKey(KeyCode.Escape))
             SceneManager.LoadScene("Menu");

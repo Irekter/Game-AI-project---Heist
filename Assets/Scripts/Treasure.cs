@@ -3,47 +3,49 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Treasure
+public class Treasure : MonoBehaviour
 {
-	public Vector3 position;
-	public int item_weight;
-	public int item_value;   
-    public int looting_time;
-	public float item_worth;
-	public bool visted;
-	public bool alarmed;
-	public bool secured;
-	public bool opened;
-	
-	
-    public Treasure(Vector3 _pos, int _value_item, int _weight, int _looting_time, bool _alarmed, bool _secured)
+	public int item_weight = 0;
+	public int item_value = 0;   
+    public int looting_time = 0;
+
+    private float item_worth = 0;
+
+	public bool visited = false;
+	public bool alarmed = false;
+	public bool secured = false;
+	public bool opened = false;
+
+    private void Start()
     {
- 		this.position = _pos;
-		this.item_weight = _weight;
-	    this.item_value = _value_item;   
-		if(_value_item != 0) 
-		{
-			this.item_worth = _weight / _value_item;
-		} 
-		else 
-		{
-			this.item_worth = 0;
-		}
-		this.visted = false;
-		this.alarmed = _alarmed;
-		this.secured = _secured;
-		this.opened = false;
-		this.looting_time = _looting_time;
+        setItemWorth();
     }
-	
-	void empty_treasure()
+
+
+    private void Update()
+    {
+        setItemWorth();
+    }
+
+    void setItemWorth()
+    {
+        if (item_weight != 0)
+        {
+            item_worth = item_value / item_weight;
+        }
+        else
+        {
+            item_worth = 0;
+        }
+    }
+
+
+    public void empty_treasure()
 	{
-		this.item_value = 0;
-		this.item_weight = 0;
-		this.item_worth = 0;
-		this.visted = true;
-		this.opened = true;
-		this.looting_time = 0;		
+		item_value = 0;
+        item_weight = 0;
+		opened = true;
+		looting_time = 0;		
 	}
 	
 	

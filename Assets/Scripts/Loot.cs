@@ -13,9 +13,9 @@ public class Loot : IComparable <Loot>
     {
  		this.item_weight = _weight;
 	    this.item_value = _value_item;   
-		if(_value_item != 0) 
+		if(_weight != 0) 
 		{
-			this.item_worth = _weight / _value_item;
+			this.item_worth =  (float)_value_item / (float)_weight;
 		} 
 		else 
 		{

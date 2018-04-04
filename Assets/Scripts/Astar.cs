@@ -14,6 +14,7 @@ public class Astar : MonoBehaviour {
     public GameObject[] targets;
     public GameObject exit;
     List<GameObject> trgts;
+    List<GameObject> opened_treasures;
     public float targetradius = 2f;
     public GameObject[] coins;
     public LayerMask obs;
@@ -23,6 +24,7 @@ public class Astar : MonoBehaviour {
 	void Start() 
 	{
 		instance = this;
+        opened_treasures = new List<GameObject>();
 	}
 
 	private void Awake()
@@ -39,19 +41,25 @@ public class Astar : MonoBehaviour {
     {
         if (exit != null && exit.transform.childCount > 0)
         {
-            if (Player.instance.current_weight >= Player.instance.CAPACITY)
+            if ((Player.instance.current_weight >= Player.instance.CAPACITY) || (trgts.Count == 0))
             {
                 target = exit.transform;
 				
 				if((start.position - target.position).magnitude <= 1)
 				{
-					target = targetSelector();
-                    Player.instance.current_weight = 0;
-				}
+                    if (trgts.Count == 0)
+                    {
+                        trgts.AddRange(opened_treasures);
+                        opened_treasures.Clear();
+                    }
+
+                    target = targetSelector();
+                    Player.instance.dropTreasureAtExit();
+                }
             }
             else
             {
-				target = targetSelector();
+                target = targetSelector();
             }
             grid.final_path = pathfinder(start.position, target.position);
         }
@@ -72,7 +80,7 @@ public class Astar : MonoBehaviour {
 		if (trgts.Count == 0) 
 		{
 			trgts.Add (exit);
-		}
+        }
 
 
         foreach (GameObject end in trgts)
@@ -87,14 +95,47 @@ public class Astar : MonoBehaviour {
 
         if (Vector3.Distance(target.position, start.position) <= targetradius)
         {
-			      visited.Add (target);
-			      trgts.Remove (toberemoved);
-			      coin = toberemoved.transform.GetChild (0).gameObject;
-			      Destroy (coin);
-			      mindistance = int.MaxValue;
-                  Player.instance.current_weight += 5;
+            //if (Player.instance.agent_type == 1)
+            //{
+            //    // agent 1 each behaviour: Take all in capacity. Leave rest
+            //    visited.Add(target);
+            //    trgts.Remove(toberemoved);
+            //    mindistance = int.MaxValue;
+            //    if (Player.instance.pickNewItem(target.GetComponent<Treasure>()))
+            //    {
+            //        destroyCoin(toberemoved, coin);
+            //    }
+            //}
+            if (Player.instance.agent_type == 1)
+            {
+                // agent 2
+                visited.Add(target);
+                trgts.Remove(toberemoved);
+                mindistance = int.MaxValue;
+                if (target.gameObject != exit)
+                {
+                    if (Player.instance.exchange_item(target.GetComponent<Treasure>()))
+                    {
+                        destroyCoin(toberemoved, coin);
+                    }
+                    else
+                    {
+                        if (toberemoved.GetComponent<Treasure>().item_weight <= Player.instance.CAPACITY)
+                        {
+                            opened_treasures.Add(toberemoved);
+                        }
+                    }
+
+                }
+            }
         }
         return target;
+    }
+
+    public void destroyCoin(GameObject target, GameObject coin)
+    {
+        coin = target.transform.GetChild(0).gameObject;
+        Destroy(coin);
     }
 
     public List<Node> pathfinder(Vector3 start_pos, Vector3 target_pos)

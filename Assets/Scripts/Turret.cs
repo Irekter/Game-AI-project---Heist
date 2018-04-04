@@ -45,7 +45,7 @@ public class Turret : MonoBehaviour
             shortestDist = distToEnemy;
         }
 
-        if (target != null && shortestDist<=range)
+        if (shortestDist<=range)
         {
             target = player.transform;
         }
