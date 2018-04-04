@@ -454,10 +454,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 1538538892}
   rotate: {fileID: 1146078494}
-  range: 0
+  range: 10
   turnSpeed: 5
-  fireRate: 2
-  fireCtdwn: 0
+  fireRate: 1
+  fireCtdwn: 0.1
   bulletPrefab: {fileID: 1216300632032878, guid: 52c83e8169ca432449d3bdd4144f5206,
     type: 2}
   firePoint: {fileID: 491629874}
@@ -1019,13 +1019,14 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 365843910}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63c220047ebe6bf408a3388695634201, type: 3}
+  m_Script: {fileID: 11500000, guid: 145154c373e7fc64ca1adf06798ce2ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   timer: {fileID: 365843912}
-  timelimit: 10
+  timelimit: 60
+  resetTimer: 0
 --- !u!1 &374725364
 GameObject:
   m_ObjectHideFlags: 0
@@ -2349,9 +2350,6 @@ MonoBehaviour:
   exit: {fileID: 141866641}
   targetradius: 1
   coins: []
-  curr_weight: 0
-  CAPACITY: 10
-  WEIGTH_VALUE: 10
   obs:
     serializedVersion: 2
     m_Bits: 512
@@ -2657,6 +2655,19 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &1500728075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1500728073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2032ac1ada871554d909f9778919f129, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CAPACITY: 20
+  current_weight: 0
 --- !u!1001 &1538538891
 Prefab:
   m_ObjectHideFlags: 0

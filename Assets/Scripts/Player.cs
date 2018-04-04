@@ -2,20 +2,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
-public class Player {
+public class Player : MonoBehaviour {
 	
     public static Player instance;
-	public int CAPACITY;
+	public int CAPACITY = 20;
     public int current_weight;
-	private List<Loot> player_loot; 
-    /*
+	private List<Loot> player_loot;
+    Treasure current_target;
+
+    //private float time_to_exit
+    //{
+    //    get {
+    //        return Vector3.Distance() / agent.velocity 
+    //    }
+    //}
+    NavMeshAgent agent;
+
 	void Start() 
 	{
 		instance = this;
 		current_weight = 0;
 	}
-	*/
+	
 	
 	public Player(int cap){
 		this.CAPACITY = cap;
@@ -25,11 +35,11 @@ public class Player {
 
     public bool pickNewItem(Treasure t)
     {
-       Loot l = new Loot(t.item_value, t.item_weight);
-	   if((current_weight + l.item_weight) <= CAPACITY) 
+       Loot loot = new Loot(t.item_value, t.item_weight);
+	   if((current_weight + loot.item_weight) <= CAPACITY) 
 	   { 
-			current_weight += l.item_weight;
-			player_loot.Add(l);
+			current_weight += loot.item_weight;
+			player_loot.Add(loot);
 			return true;
 	   } 
 	   return false;
@@ -51,23 +61,23 @@ public class Player {
 	
 	public bool exchange_item(Treasure t) 
 	{
-		Loot l = new Loot(t.item_value, t.item_weight);
-		if((current_weight + l.item_value) <= CAPACITY) 
+		Loot loot = new Loot(t.item_value, t.item_weight);
+		if((current_weight + loot.item_value) <= CAPACITY) 
 		{ 
-			current_weight += l.item_weight;
-			player_loot.Add(l);
+			current_weight += loot.item_weight;
+			player_loot.Add(loot);
 			return  true;
 	    } 		
 		foreach(Loot lu in player_loot) 
 		{
-			if(lu.item_worth < l.item_worth) 
+			if(lu.item_worth < loot.item_worth) 
 			{
-		     	if(lu.item_weight <= l.item_weight) 
+		     	if(lu.item_weight <= loot.item_weight) 
 				{
-					current_weight = current_weight + l.item_weight - lu.item_weight;
-					lu.item_weight = l.item_weight;
-					lu.item_value = l.item_value;   
-					lu.item_worth = l.item_worth;
+					current_weight = current_weight + loot.item_weight - lu.item_weight;
+					lu.item_weight = loot.item_weight;
+					lu.item_value = loot.item_value;   
+					lu.item_worth = loot.item_worth;
 					return true;
 				} 
 			}

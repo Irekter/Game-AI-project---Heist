@@ -9,7 +9,6 @@ public class Astar : MonoBehaviour {
 
     public static Astar instance;
     public Transform start;
-    public Player p;
     Transform target;
     Grid grid;
     public GameObject[] targets;
@@ -24,7 +23,6 @@ public class Astar : MonoBehaviour {
 	void Start() 
 	{
 		instance = this;
-		p = new Player(10);
 	}
 
 	private void Awake()
@@ -41,15 +39,14 @@ public class Astar : MonoBehaviour {
     {
         if (exit != null && exit.transform.childCount > 0)
         {
-            if (p.current_weight > p.CAPACITY)
+            if (Player.instance.current_weight >= Player.instance.CAPACITY)
             {
                 target = exit.transform;
-				Debug.Log("Exiting");
+				
 				if((start.position - target.position).magnitude <= 1)
 				{
-					Debug.Log("Making Zero");
 					target = targetSelector();
-					p.current_weight = 0;
+                    Player.instance.current_weight = 0;
 				}
             }
             else
@@ -90,13 +87,12 @@ public class Astar : MonoBehaviour {
 
         if (Vector3.Distance(target.position, start.position) <= targetradius)
         {
-            //System.Threading.Thread.Sleep(1000);
 			      visited.Add (target);
 			      trgts.Remove (toberemoved);
 			      coin = toberemoved.transform.GetChild (0).gameObject;
 			      Destroy (coin);
 			      mindistance = int.MaxValue;
-			      p.current_weight += 5;
+                  Player.instance.current_weight += 5;
         }
         return target;
     }
