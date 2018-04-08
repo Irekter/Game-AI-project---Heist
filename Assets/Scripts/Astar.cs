@@ -78,7 +78,6 @@ public class Astar : MonoBehaviour {
         float mindistance = int.MaxValue;
         List<Transform> visited = new List<Transform>();
         GameObject toberemoved = null;
-        GameObject coin = null;
 
 		if (trgts.Count == 0) 
 		{
@@ -118,7 +117,7 @@ public class Astar : MonoBehaviour {
 					Loot treasure_loot = target.GetComponent<Treasure>().open_treasure();
 					if (Player.instance.exchange_loot(treasure_loot))
                     {
-                        destroyCoin(toberemoved, coin);
+						Player.instance.set_current_treasure (toberemoved);
 						target.GetComponent<Treasure>().empty_treasure();
                     }
                     else
@@ -133,12 +132,6 @@ public class Astar : MonoBehaviour {
             }
         }
         return target;
-    }
-
-    public void destroyCoin(GameObject target, GameObject coin)
-    {
-        coin = target.transform.GetChild(0).gameObject;
-        Destroy(coin);
     }
 
     public List<Node> pathfinder(Vector3 start_pos, Vector3 target_pos)

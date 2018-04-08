@@ -7,7 +7,7 @@ using UnityEngine.AI;
 public class Player : MonoBehaviour {
 	
     public static Player instance;
-	public int CAPACITY = 20;
+	public int CAPACITY = 21;
     private int gold_weight;
 	private int gold_value;
 	private List<Loot> player_loot;
@@ -16,10 +16,15 @@ public class Player : MonoBehaviour {
     public bool flee;
 	public int agent_type = 1;
     NavMeshAgent agent;
+	private float loot_timing;
+	private Animator anim;
+	private GameObject current_treasure;
+	private Loot current_loot;
 
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+		anim = GetComponent<Animator> ();
     }
 
 	
@@ -32,20 +37,34 @@ public class Player : MonoBehaviour {
 		exit_target = GameObject.FindGameObjectWithTag ("Exit").transform.position;
 		flee = false;
 		time_to_exit = 10;
+		loot_timing = 0;
+		current_treasure = null;
+		current_loot = null;
     }
 
     private void Update()
     {
-        float velocity = agent.velocity.magnitude;
-		if(velocity != 0) 
+		update_time_to_exit();
+		update_flee_time();
+		update_player_motion();
+    }
+
+	private void update_time_to_exit()
+	{
+		float speed = agent.speed;
+		if(speed != 0) 
 		{
-			time_to_exit = ((agent.transform.position - exit_target).magnitude)/velocity;
+			time_to_exit = Vector3.Distance(agent.transform.position, exit_target)/speed;
 			time_to_exit += (float)1.5;
 		} 
 		else 
 		{
-			time_to_exit = 10;
+			time_to_exit = 0;
 		}
+	}
+
+	private void update_flee_time() 
+	{
 		if (time_to_exit >= Timer.instance.timelimit) 
 		{
 			flee = true;
@@ -53,8 +72,43 @@ public class Player : MonoBehaviour {
 		{
 			flee = false;
 		}
-    }
+	}
 
+	private void update_player_motion() 
+	{
+		if (loot_timing > 0) 
+		{
+			loot_timing -= Time.fixedDeltaTime;
+			if (flee) 
+			{
+				anim.SetInteger("moving", 1);
+				agent.speed = 4;
+			} 
+			else 
+			{
+				anim.SetInteger("moving", 0);	
+				agent.velocity = Vector3.zero;
+				agent.speed = 0;
+			}
+		}
+		else
+		{
+			anim.SetInteger("moving", 1);
+			loot_timing = 0;
+			agent.speed = 4;
+			if (current_loot != null) {
+				destroyCoin();
+				add_loot (current_loot);
+				current_loot = null;
+			}
+
+		}   
+	}
+
+	public void add_loot_timing(float timelimit) {
+		loot_timing += timelimit;
+	}
+		
 	public int get_player_gold_weight()
 	{
 		return gold_weight; 
@@ -68,6 +122,11 @@ public class Player : MonoBehaviour {
 	public float get_time_to_exit()
 	{
 		return time_to_exit; 
+	}
+
+	public float get_looting_time()
+	{
+		return loot_timing;
 	}
 
     public void drop_treasure_at_exit()
@@ -100,13 +159,32 @@ public class Player : MonoBehaviour {
 		return ((gold_weight * 100) / CAPACITY);
 	}
 
+	public void set_current_treasure(GameObject treasure) 
+	{
+		current_treasure = treasure;
+	}
+
+	private void destroyCoin()
+	{
+		if (current_treasure != null) {
+			GameObject coin = current_treasure.transform.GetChild (0).gameObject;
+			Destroy (coin);
+			current_treasure = null;
+		}
+	}
+
+	public void add_loot(Loot treasure_loot)
+	{
+		gold_weight += treasure_loot.loot_weight;
+		gold_value += treasure_loot.loot_value;
+		player_loot.Add(treasure_loot);
+	}
+
 	public bool pick_new_loot(Loot treasure_loot)
 	{
 		if (is_accepting_loot(treasure_loot.loot_weight)) 
 		{ 
-			gold_weight += treasure_loot.loot_weight;
-			gold_value += treasure_loot.loot_value;
-			player_loot.Add(treasure_loot);
+			current_loot = treasure_loot;
 			return true;
 		} 
 		return false;
@@ -115,28 +193,36 @@ public class Player : MonoBehaviour {
 	public bool exchange_loot(Loot treasure_loot) 
 	{
         // Pickup the item if we have space
-		//Debug.Log("Exchange: " + treasure_loot.loot_weight + " " + treasure_loot.loot_value);
+		Loot it_loot = new Loot();
+		bool found_exchange = false; 
 
 		if(pick_new_loot(treasure_loot)) 
 		{
 			return true;
-		}
+		}		
+
         foreach (Loot lu in player_loot) 
 		{
 			if (lu.loot_worth < treasure_loot.loot_worth) 
 			{
 				if((gold_weight + treasure_loot.loot_weight - lu.loot_weight) <= CAPACITY) 
 				{   
-					gold_weight = gold_weight + treasure_loot.loot_weight - lu.loot_weight;
-					gold_value = gold_value + treasure_loot.loot_value - lu.loot_value;
-					lu.loot_weight = treasure_loot.loot_weight;
-					lu.loot_value = treasure_loot.loot_value;   
-					lu.loot_worth = treasure_loot.loot_worth;
-                    return true;
-                } 
+					found_exchange = true;
+					if ((it_loot.loot_value == 0) || (it_loot.CompareTo (lu) == 1))
+					{
+						it_loot = lu; 
+					} 
+                }
 			}
 		}
-		return false;
+		if (found_exchange) 
+		{
+			current_loot = treasure_loot;
+			player_loot.Remove(it_loot);
+			gold_weight -= it_loot.loot_weight;
+			gold_value -= it_loot.loot_value;
+		}
+		return found_exchange;
 	}
 }
 

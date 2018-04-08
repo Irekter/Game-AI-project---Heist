@@ -6,16 +6,14 @@ using UnityEngine.AI;
 public class move : MonoBehaviour {
 
     public Transform player;
-    private Animator anim;
     Grid grid;
     private NavMeshAgent agent;
     Astar astar;
 
     private void Awake()
     {
-        anim = player.GetComponent<Animator>();
         grid = GetComponent<Grid>();
-		    agent = player.GetComponent<NavMeshAgent>();
+	    agent = player.GetComponent<NavMeshAgent>();
     }
 
     void Update()
@@ -27,7 +25,6 @@ public class move : MonoBehaviour {
     {
         if (mover.Count >= 2)
         {
-            anim.SetInteger("moving", 1);
             agent.destination = mover[1].position;
             mover.RemoveAt(0);
         }
