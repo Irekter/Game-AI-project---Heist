@@ -21,7 +21,7 @@ public class Timer : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         if (timelimit > 0)
-            timelimit -= Time.deltaTime;
+			timelimit -= Time.fixedDeltaTime;
         else
             timer.color = Color.red;
            

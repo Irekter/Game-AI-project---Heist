@@ -118,7 +118,8 @@ public class Astar : MonoBehaviour {
 					Loot treasure_loot = target.GetComponent<Treasure>().open_treasure();
 					if (Player.instance.exchange_loot(treasure_loot))
                     {
-                        destroyCoin(toberemoved, coin);
+						Player.instance.set_current_treasure (toberemoved);
+						//destroyCoin(toberemoved, coin);
 						target.GetComponent<Treasure>().empty_treasure();
                     }
                     else
@@ -135,11 +136,11 @@ public class Astar : MonoBehaviour {
         return target;
     }
 
-    public void destroyCoin(GameObject target, GameObject coin)
+    /*public void destroyCoin(GameObject target, GameObject coin)
     {
         coin = target.transform.GetChild(0).gameObject;
         Destroy(coin);
-    }
+    }*/
 
     public List<Node> pathfinder(Vector3 start_pos, Vector3 target_pos)
     {

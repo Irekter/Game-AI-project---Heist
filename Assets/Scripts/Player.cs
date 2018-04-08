@@ -16,10 +16,14 @@ public class Player : MonoBehaviour {
     public bool flee;
 	public int agent_type = 1;
     NavMeshAgent agent;
+	private float loot_timing;
+	private Animator anim;
+	private GameObject current_treasure;
 
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+		anim = GetComponent<Animator> ();
     }
 
 	
@@ -32,11 +36,20 @@ public class Player : MonoBehaviour {
 		exit_target = GameObject.FindGameObjectWithTag ("Exit").transform.position;
 		flee = false;
 		time_to_exit = 10;
+		loot_timing = 0;
+		current_treasure = null;
     }
 
     private void Update()
     {
-        float velocity = agent.velocity.magnitude;
+		update_time_to_exit();
+		update_flee_time();
+		update_player_motion();
+    }
+
+	private void update_time_to_exit()
+	{
+		float velocity = agent.velocity.magnitude;
 		if(velocity != 0) 
 		{
 			time_to_exit = ((agent.transform.position - exit_target).magnitude)/velocity;
@@ -46,6 +59,10 @@ public class Player : MonoBehaviour {
 		{
 			time_to_exit = 10;
 		}
+	}
+
+	private void update_flee_time() 
+	{
 		if (time_to_exit >= Timer.instance.timelimit) 
 		{
 			flee = true;
@@ -53,8 +70,39 @@ public class Player : MonoBehaviour {
 		{
 			flee = false;
 		}
-    }
+	}
 
+	private void update_player_motion() 
+	{
+		if (loot_timing > 0) 
+		{
+			loot_timing -= Time.fixedDeltaTime;
+			if (flee) 
+			{
+				anim.SetInteger("moving", 1);
+				agent.speed = 4;
+			} 
+			else 
+			{
+				anim.SetInteger("moving", 0);	
+				agent.velocity = Vector3.zero;
+				agent.speed = 0;
+			}
+		}
+		else
+		{
+			anim.SetInteger("moving", 1);
+			Debug.Log ("Moving");
+			loot_timing = 0;
+			agent.speed = 4;
+			destroyCoin();
+		}   
+	}
+
+	public void add_loot_timing(float timelimit) {
+		loot_timing += timelimit;
+	}
+		
 	public int get_player_gold_weight()
 	{
 		return gold_weight; 
@@ -68,6 +116,11 @@ public class Player : MonoBehaviour {
 	public float get_time_to_exit()
 	{
 		return time_to_exit; 
+	}
+
+	public float get_looting_time()
+	{
+		return loot_timing;
 	}
 
     public void drop_treasure_at_exit()
@@ -100,6 +153,20 @@ public class Player : MonoBehaviour {
 		return ((gold_weight * 100) / CAPACITY);
 	}
 
+	public void set_current_treasure(GameObject treasure) 
+	{
+		current_treasure = treasure;
+	}
+
+	private void destroyCoin()
+	{
+		if (current_treasure != null) {
+			GameObject coin = current_treasure.transform.GetChild (0).gameObject;
+			Destroy (coin);
+			current_treasure = null;
+		}
+	}
+
 	public bool pick_new_loot(Loot treasure_loot)
 	{
 		if (is_accepting_loot(treasure_loot.loot_weight)) 
@@ -115,8 +182,6 @@ public class Player : MonoBehaviour {
 	public bool exchange_loot(Loot treasure_loot) 
 	{
         // Pickup the item if we have space
-		//Debug.Log("Exchange: " + treasure_loot.loot_weight + " " + treasure_loot.loot_value);
-
 		if(pick_new_loot(treasure_loot)) 
 		{
 			return true;

@@ -7,8 +7,8 @@ public class Treasure : MonoBehaviour
 {
 	public int gold_weight = 5;
 	public int gold_value = 10;   
-    public int looting_time = 2;
-    public int breaking_time = 2;
+    public float looting_time = 2;
+    public float breaking_time = 2;
     private float gold_worth = 0;
 	public bool alarmed = false;
 	public bool secured = false;
@@ -33,12 +33,12 @@ public class Treasure : MonoBehaviour
 	
 	private void set_looting_time()
     {
-		looting_time = gold_weight / 10;
+		looting_time = (float)gold_weight / (float)10;
     }
 
     public void empty_treasure()
 	{
-		Timer.instance.timelimit -= looting_time;
+		Player.instance.add_loot_timing (looting_time);
 		gold_value = 0;
         gold_weight = 0;
 		looting_time = 0;
@@ -46,8 +46,8 @@ public class Treasure : MonoBehaviour
 	
 	public Loot open_treasure()
 	{
+		Player.instance.add_loot_timing (breaking_time);
 		Loot treasure_loot = new Loot(gold_value, gold_weight);
-		Timer.instance.timelimit -= breaking_time;
 		breaking_time = 0;
 		return treasure_loot;
 	}

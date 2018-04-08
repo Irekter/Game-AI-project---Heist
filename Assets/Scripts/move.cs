@@ -15,7 +15,7 @@ public class move : MonoBehaviour {
     {
         anim = player.GetComponent<Animator>();
         grid = GetComponent<Grid>();
-		    agent = player.GetComponent<NavMeshAgent>();
+	    agent = player.GetComponent<NavMeshAgent>();
     }
 
     void Update()
@@ -27,7 +27,7 @@ public class move : MonoBehaviour {
     {
         if (mover.Count >= 2)
         {
-            anim.SetInteger("moving", 1);
+            //anim.SetInteger("moving", 1);
             agent.destination = mover[1].position;
             mover.RemoveAt(0);
         }
