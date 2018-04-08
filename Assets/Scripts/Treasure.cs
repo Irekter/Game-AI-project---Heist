@@ -9,28 +9,14 @@ public class Treasure : MonoBehaviour
 	public int gold_value = 10;   
     public float looting_time = 2;
     public float breaking_time = 2;
-    private float gold_worth = 0;
 	public bool alarmed = false;
 	public bool secured = false;
 
     private void Start()
     {
-        set_gold_worth();
 		set_looting_time();
     }
 
-    private void set_gold_worth()
-    {
-        if (gold_weight != 0)
-        {
-            gold_worth = gold_value / gold_weight;
-        }
-        else
-        {
-            gold_worth = 0;
-        }
-    }
-	
 	private void set_looting_time()
     {
 		looting_time = (float)gold_weight / (float)10;

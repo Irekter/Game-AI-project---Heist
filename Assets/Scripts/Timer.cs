@@ -7,14 +7,12 @@ public class Timer : MonoBehaviour {
 
     public static Timer instance;
     public Text timer;
-    float startTime;
     public float timelimit = 60f;
     public float resetTimer;
    
 	// Use this for initialization
 	void Start () {
         instance = this;
-        startTime = Time.time;
         resetTimer = timelimit;
     }
 	

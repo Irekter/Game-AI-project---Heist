@@ -7,7 +7,7 @@ using UnityEngine.AI;
 public class Player : MonoBehaviour {
 	
     public static Player instance;
-	public int CAPACITY = 20;
+	public int CAPACITY = 21;
     private int gold_weight;
 	private int gold_value;
 	private List<Loot> player_loot;
@@ -19,6 +19,7 @@ public class Player : MonoBehaviour {
 	private float loot_timing;
 	private Animator anim;
 	private GameObject current_treasure;
+	private Loot current_loot;
 
     private void Awake()
     {
@@ -38,6 +39,7 @@ public class Player : MonoBehaviour {
 		time_to_exit = 10;
 		loot_timing = 0;
 		current_treasure = null;
+		current_loot = null;
     }
 
     private void Update()
@@ -49,15 +51,15 @@ public class Player : MonoBehaviour {
 
 	private void update_time_to_exit()
 	{
-		float velocity = agent.velocity.magnitude;
-		if(velocity != 0) 
+		float speed = agent.speed;
+		if(speed != 0) 
 		{
-			time_to_exit = ((agent.transform.position - exit_target).magnitude)/velocity;
+			time_to_exit = Vector3.Distance(agent.transform.position, exit_target)/speed;
 			time_to_exit += (float)1.5;
 		} 
 		else 
 		{
-			time_to_exit = 10;
+			time_to_exit = 0;
 		}
 	}
 
@@ -92,10 +94,14 @@ public class Player : MonoBehaviour {
 		else
 		{
 			anim.SetInteger("moving", 1);
-			Debug.Log ("Moving");
 			loot_timing = 0;
 			agent.speed = 4;
-			destroyCoin();
+			if (current_loot != null) {
+				destroyCoin();
+				add_loot (current_loot);
+				current_loot = null;
+			}
+
 		}   
 	}
 
@@ -167,13 +173,18 @@ public class Player : MonoBehaviour {
 		}
 	}
 
+	public void add_loot(Loot treasure_loot)
+	{
+		gold_weight += treasure_loot.loot_weight;
+		gold_value += treasure_loot.loot_value;
+		player_loot.Add(treasure_loot);
+	}
+
 	public bool pick_new_loot(Loot treasure_loot)
 	{
 		if (is_accepting_loot(treasure_loot.loot_weight)) 
 		{ 
-			gold_weight += treasure_loot.loot_weight;
-			gold_value += treasure_loot.loot_value;
-			player_loot.Add(treasure_loot);
+			current_loot = treasure_loot;
 			return true;
 		} 
 		return false;
@@ -182,26 +193,36 @@ public class Player : MonoBehaviour {
 	public bool exchange_loot(Loot treasure_loot) 
 	{
         // Pickup the item if we have space
+		Loot it_loot = new Loot();
+		bool found_exchange = false; 
+
 		if(pick_new_loot(treasure_loot)) 
 		{
 			return true;
-		}
+		}		
+
         foreach (Loot lu in player_loot) 
 		{
 			if (lu.loot_worth < treasure_loot.loot_worth) 
 			{
 				if((gold_weight + treasure_loot.loot_weight - lu.loot_weight) <= CAPACITY) 
 				{   
-					gold_weight = gold_weight + treasure_loot.loot_weight - lu.loot_weight;
-					gold_value = gold_value + treasure_loot.loot_value - lu.loot_value;
-					lu.loot_weight = treasure_loot.loot_weight;
-					lu.loot_value = treasure_loot.loot_value;   
-					lu.loot_worth = treasure_loot.loot_worth;
-                    return true;
-                } 
+					found_exchange = true;
+					if ((it_loot.loot_value == 0) || (it_loot.CompareTo (lu) == 1))
+					{
+						it_loot = lu; 
+					} 
+                }
 			}
 		}
-		return false;
+		if (found_exchange) 
+		{
+			current_loot = treasure_loot;
+			player_loot.Remove(it_loot);
+			gold_weight -= it_loot.loot_weight;
+			gold_value -= it_loot.loot_value;
+		}
+		return found_exchange;
 	}
 }
 
