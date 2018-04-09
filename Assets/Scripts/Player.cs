@@ -68,7 +68,8 @@ public class Player : MonoBehaviour {
 		if (time_to_exit >= Timer.instance.timelimit) 
 		{
 			flee = true;
-		} else 
+		}
+        else 
 		{
 			flee = false;
 		}
