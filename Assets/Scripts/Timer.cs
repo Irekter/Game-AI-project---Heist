@@ -11,9 +11,12 @@ public class Timer : MonoBehaviour {
     public float resetTimer;
     private float start_time;
 
-
-	// Use this for initialization
-	void Start () {
+    private void Awake()
+    {
+        Time.timeScale = 2;
+    }
+    // Use this for initialization
+    void Start () {
         instance = this;
         resetTimer = timelimit;
     }

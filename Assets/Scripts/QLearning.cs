@@ -11,8 +11,8 @@ public class QLearning : MonoBehaviour {
     GameObject[] targets;
     int action;
     double[,] Q = new double[6,2];
-    double[,] R = { {2,-1 },{2, -1},{1,-1},{-1,2 },{-1,2 },{-1,2} };
-
+    double[,] R = { {2,-1 },{2, -1},{2,-1},{2,-1},{2,0 },{-1,2} };
+    public static QLearning instance;
 
     // ACTIONS:
     const int GO_TO_TARGET = 0;
@@ -23,6 +23,7 @@ public class QLearning : MonoBehaviour {
 
     void Awake()
     {
+        instance = this;
         agent = GetComponent<NavMeshAgent>();
     }
 
@@ -35,27 +36,37 @@ public class QLearning : MonoBehaviour {
     }
 
     Random rd = new Random();
+    public bool busy;
 
     // Update is called once per frame
     void Update() {
-        if (Player.instance.gold_weight_till_now == 35)
+        if (Player.instance.gold_weight_till_now == 32)
         {
             EnvReset();
         }
         target = Astar.instance.targetSelector();
-       
+        if (Vector3.Distance(transform.position, Astar.instance.exit.transform.position) <= 1)
+            Player.instance.drop_treasure_at_exit();
+
+
         // selects action using q-learning
-        int action = move_decider(Player.instance.percent_full());
+        if (!busy)
+        {
+            action = move_decider(Player.instance.percent_full());
+            busy = true;
+        }
 
         // executes the actions
         Tasks(action);
+
+
     }
 
 
     int move_decider(int percent)
     {
-        //action = QLearner(percent);
-        return GO_TO_TARGET;
+        action = QLearner(percent);
+        return action;
     }
 
     // HYPERPARAMETERS:
@@ -69,11 +80,14 @@ public class QLearning : MonoBehaviour {
         int rnd = Random.Range(0,POSSIBLE_MOVES);
        
         int currentstate = define_state(percent);
+        //Debug.Log("currentstate: " + currentstate);
+
 
         if (rnd < epsilon)
             action = Random.Range(0, POSSIBLE_MOVES);
         else
             action = getAction(currentstate);
+        Debug.Log("action: " + action);
 
         int nextstate = getNextState();
 
@@ -86,6 +100,7 @@ public class QLearning : MonoBehaviour {
 
         Q[currentstate, action] = q;
 
+        epsilon = 0.9 * epsilon;
         return action;
     }
     
@@ -148,6 +163,7 @@ public class QLearning : MonoBehaviour {
         transform.position = start_pos;
         Player.instance.player_reset();
         Timer.instance.timer_reset();
+        Astar.instance.reset();
     }
 
     void Tasks(int action)
@@ -162,10 +178,12 @@ public class QLearning : MonoBehaviour {
         if (action == GO_TO_EXIT)
         {
             agent.SetDestination(Astar.instance.exit.transform.position);
+            //Player.instance.drop_treasure_at_exit();
+            //Astar.instance.target = Astar.instance.exit.transform;
         }
 
         //// drop treasure
-        //if (action == "droptreasure")
+        //if (action == DROP_TREASURE)
         //{
         //    Player.instance.drop_treasure_at_exit();
         //}

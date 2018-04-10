@@ -448,7 +448,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faa7e12a24a3df34fac09fa2a6a636a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AutoMove: 1
+  AutoMove: 0
   astar: {fileID: 1358778914}
   gameover: {fileID: 215412500}
 --- !u!1 &333504148
@@ -1789,7 +1789,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1358778914}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 909b9b446bad4ac45b525a53a3cea132, type: 3}
   m_Name: 
@@ -1960,7 +1960,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1500728073}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 49403b1d43b4d374f8a11f8e1595a0ce, type: 3}
   m_Name: 
@@ -1990,15 +1990,15 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4353504019307950, guid: 03b2154d3a214bb45885f9adb406d52f, type: 2}
       propertyPath: m_LocalRotation.y
-      value: -0.99922675
+      value: -0.9961947
       objectReference: {fileID: 0}
     - target: {fileID: 4353504019307950, guid: 03b2154d3a214bb45885f9adb406d52f, type: 2}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4353504019307950, guid: 03b2154d3a214bb45885f9adb406d52f, type: 2}
       propertyPath: m_LocalRotation.w
-      value: -0.039317887
+      value: -0.08715578
       objectReference: {fileID: 0}
     - target: {fileID: 4353504019307950, guid: 03b2154d3a214bb45885f9adb406d52f, type: 2}
       propertyPath: m_RootOrder
@@ -2038,7 +2038,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4353504019307950, guid: 03b2154d3a214bb45885f9adb406d52f, type: 2}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -184.50699
+      value: -190
       objectReference: {fileID: 0}
     - target: {fileID: 1956848902904474, guid: 03b2154d3a214bb45885f9adb406d52f, type: 2}
       propertyPath: m_TagString
@@ -2053,6 +2053,10 @@ Prefab:
         type: 2}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1956848902904474, guid: 03b2154d3a214bb45885f9adb406d52f, type: 2}
+      propertyPath: m_Name
+      value: Agent
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 03b2154d3a214bb45885f9adb406d52f, type: 2}

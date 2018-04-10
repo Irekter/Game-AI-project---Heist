@@ -9,7 +9,7 @@ public class Astar : MonoBehaviour {
 
     public static Astar instance;
     public Transform start;
-    Transform target;
+    public Transform target;
     Grid grid;
     public GameObject[] targets;
     public GameObject exit;
@@ -29,10 +29,7 @@ public class Astar : MonoBehaviour {
 
 	private void Awake()
     {
-        targets = GameObject.FindGameObjectsWithTag("End");
-        exit = GameObject.FindGameObjectWithTag("Exit");
-        coins = GameObject.FindGameObjectsWithTag("Coin");
-        trgts = targets.ToList();
+        reset();
         grid = GetComponent<Grid>();
     }
 
@@ -54,6 +51,7 @@ public class Astar : MonoBehaviour {
 				{
                     if (trgts.Count == 0)
                     {
+                        Debug.Log("target count 0 adding opened treasures");
                         trgts.AddRange(opened_treasures);
                         opened_treasures.Clear();
                     }
@@ -77,13 +75,8 @@ public class Astar : MonoBehaviour {
     public Transform targetSelector()
     {
         float mindistance = int.MaxValue;
-        List<Transform> visited = new List<Transform>();
+        
         GameObject toberemoved = null;
-
-        //if (trgts.Count == 0)
-        //{
-        //    trgts.Add(exit);
-        //}
 
         foreach (GameObject end in trgts)
         {
@@ -110,21 +103,29 @@ public class Astar : MonoBehaviour {
             //}
             if (Player.instance.agent_type == 1)
             {
-                visited.Add(target);
                 trgts.Remove(toberemoved);
-                mindistance = int.MaxValue;
+                
+
+
+                // looting the reached target
                 if (target.gameObject != exit)
                 {
+                    // returns loot attributes and sets player breaking time and treasure breaking time set to zero
 					Loot treasure_loot = target.GetComponent<Treasure>().open_treasure();
+
+                    // after opening check if we can take the treasure
 					if (Player.instance.pick_new_loot(treasure_loot))
                     {
+                        // performs looting
 						Player.instance.set_current_treasure (toberemoved);
 						target.GetComponent<Treasure>().empty_treasure();  
                     }
-                    else if(toberemoved != null)
+                    else
                     {
+                        // can't loot now so we keep track to loot in next iteration
                         if (toberemoved.GetComponent<Treasure>().gold_weight <= Player.instance.CAPACITY)
                         {
+                            // tracks treasures that were opened but not looted yet
                             opened_treasures.Add(toberemoved);
                         }
                     }
@@ -238,5 +239,13 @@ public class Astar : MonoBehaviour {
         }
 
        return smooth_path;
+    }
+
+    public void reset()
+    {
+        targets = GameObject.FindGameObjectsWithTag("End");
+        exit = GameObject.FindGameObjectWithTag("Exit");
+        coins = GameObject.FindGameObjectsWithTag("Coin");
+        trgts = targets.ToList();
     }
 }

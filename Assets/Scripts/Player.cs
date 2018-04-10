@@ -133,6 +133,7 @@ public class Player : MonoBehaviour {
         gold_weight_till_now += gold_weight;
         gold_weight = 0;
         player_loot.Clear();
+        QLearning.instance.busy = false;
     }
 		
 	public bool is_accepting_loot(int loot_weight)
@@ -167,9 +168,10 @@ public class Player : MonoBehaviour {
 	private void destroyCoin()
 	{
 		if (current_treasure != null) {
-            Debug.Log("null ref");
-			GameObject coin = current_treasure.transform.GetChild (0).gameObject;
-			Destroy (coin);
+
+            //GameObject coin = current_treasure.transform.GetChild (0).gameObject;
+            //Destroy (coin);
+            QLearning.instance.busy = false;
 			current_treasure = null;
 		}
 	}
@@ -187,7 +189,9 @@ public class Player : MonoBehaviour {
 		{ 
 			current_loot = treasure_loot;
 			return true;
-		} 
+		}
+
+        QLearning.instance.busy = false;
 		return false;
 	}
 		
@@ -236,8 +240,9 @@ public class Player : MonoBehaviour {
         loot_timing = 0;
         current_treasure = null;
         current_loot = null;
-        //last_loot = null;
         gold_weight_till_now = 0;
+        agent.velocity = Vector3.zero;
+        agent.transform.Rotate(new Vector3(0,-190,0));
     }
 }
 
