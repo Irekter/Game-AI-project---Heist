@@ -20,6 +20,8 @@ public class Player : MonoBehaviour {
 	private Animator anim;
 	private GameObject current_treasure;
 	private Loot current_loot;
+    public Loot last_loot;
+    public int gold_weight_till_now;
 
     private void Awake()
     {
@@ -31,15 +33,10 @@ public class Player : MonoBehaviour {
     void Start() 
 	{
 		instance = this;
-		gold_weight = 0;
-		gold_value = 0;
+        exit_target = GameObject.FindGameObjectWithTag("Exit").transform.position;
         this.player_loot = new List<Loot>();
-		exit_target = GameObject.FindGameObjectWithTag ("Exit").transform.position;
-		flee = false;
-		time_to_exit = 10;
-		loot_timing = 0;
-		current_treasure = null;
-		current_loot = null;
+        last_loot = new Loot();
+        player_reset();
     }
 
     private void Update()
@@ -100,6 +97,7 @@ public class Player : MonoBehaviour {
 			if (current_loot != null) {
 				destroyCoin();
 				add_loot (current_loot);
+                last_loot = current_loot;
 				current_loot = null;
 			}
 
@@ -132,6 +130,7 @@ public class Player : MonoBehaviour {
 
     public void drop_treasure_at_exit()
     {
+        gold_weight_till_now += gold_weight;
         gold_weight = 0;
         player_loot.Clear();
     }
@@ -168,6 +167,7 @@ public class Player : MonoBehaviour {
 	private void destroyCoin()
 	{
 		if (current_treasure != null) {
+            Debug.Log("null ref");
 			GameObject coin = current_treasure.transform.GetChild (0).gameObject;
 			Destroy (coin);
 			current_treasure = null;
@@ -225,5 +225,19 @@ public class Player : MonoBehaviour {
 		}
 		return found_exchange;
 	}
+
+    public void player_reset()
+    {
+        gold_weight = 0;
+        gold_value = 0;
+        player_loot.Clear();
+        flee = false;
+        time_to_exit = 10;
+        loot_timing = 0;
+        current_treasure = null;
+        current_loot = null;
+        //last_loot = null;
+        gold_weight_till_now = 0;
+    }
 }
 

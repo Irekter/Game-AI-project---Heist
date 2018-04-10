@@ -25,9 +25,9 @@ public class Treasure : MonoBehaviour
     public void empty_treasure()
 	{
 		Player.instance.add_loot_timing (looting_time);
-		gold_value = 0;
-        gold_weight = 0;
-		looting_time = 0;
+		//gold_value = 0;
+        //gold_weight = 0;
+		//looting_time = 0;
 	}
 	
 	public Loot open_treasure()

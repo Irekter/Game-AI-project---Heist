@@ -49,6 +49,7 @@ public class Astar : MonoBehaviour {
             {
                 target = exit.transform;
 				
+                // if near target drop gold
 				if((start.position - target.position).magnitude <= 1)
 				{
                     if (trgts.Count == 0)
@@ -79,11 +80,11 @@ public class Astar : MonoBehaviour {
         List<Transform> visited = new List<Transform>();
         GameObject toberemoved = null;
 
-		if (trgts.Count == 0) 
-		{
-			trgts.Add (exit);
-        }
-		
+        //if (trgts.Count == 0)
+        //{
+        //    trgts.Add(exit);
+        //}
+
         foreach (GameObject end in trgts)
         {
             if (Vector3.Distance(end.transform.position, start.position) < mindistance)
@@ -115,12 +116,12 @@ public class Astar : MonoBehaviour {
                 if (target.gameObject != exit)
                 {
 					Loot treasure_loot = target.GetComponent<Treasure>().open_treasure();
-					if (Player.instance.exchange_loot(treasure_loot))
+					if (Player.instance.pick_new_loot(treasure_loot))
                     {
 						Player.instance.set_current_treasure (toberemoved);
-						target.GetComponent<Treasure>().empty_treasure();
+						target.GetComponent<Treasure>().empty_treasure();  
                     }
-                    else
+                    else if(toberemoved != null)
                     {
                         if (toberemoved.GetComponent<Treasure>().gold_weight <= Player.instance.CAPACITY)
                         {

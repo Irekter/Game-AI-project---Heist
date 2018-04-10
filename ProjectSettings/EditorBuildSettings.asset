@@ -12,8 +12,11 @@ EditorBuildSettings:
     path: Assets/Scenes/Planning.unity
     guid: 17de461babc6b9c409118e06fc54c84a
   - enabled: 0
-    path: Assets/Scenes/Astar.unity
-    guid: 278cb6b23271f7144b3563c17854103c
-  - enabled: 1
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 0
     path: Assets/Scenes/Pathfinding.unity
     guid: 40cde4b347462074c92213273161aea0
+  - enabled: 1
+    path: Assets/Scenes/Q-learning.unity
+    guid: 6ad68e3175b77984b88a6ad51351e8bc

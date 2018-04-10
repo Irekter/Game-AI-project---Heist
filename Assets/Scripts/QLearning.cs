@@ -2,14 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-
+using UnityEngine.SceneManagement;
 
 public class QLearning : MonoBehaviour {
+
     Transform target;
     NavMeshAgent agent;
-    List<string> possible_moves = new List<string>();
-   
+    GameObject[] targets;
+    int action;
+    double[,] Q = new double[6,2];
+    double[,] R = { {2,-1 },{2, -1},{1,-1},{-1,2 },{-1,2 },{-1,2} };
 
+
+    // ACTIONS:
+    const int GO_TO_TARGET = 0;
+    const int GO_TO_EXIT = 1;
+    const int POSSIBLE_MOVES = 2;
+
+    Vector3 start_pos;
 
     void Awake()
     {
@@ -19,68 +29,145 @@ public class QLearning : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
-        possible_moves.Add("gototarget");
-        possible_moves.Add("gotoexit");
-        possible_moves.Add("droptreasure");
+        targets = Astar.instance.targets;
+        action = 0;
+        start_pos = gameObject.transform.position;
     }
 
     Random rd = new Random();
 
     // Update is called once per frame
     void Update() {
+        if (Player.instance.gold_weight_till_now == 35)
+        {
+            EnvReset();
+        }
         target = Astar.instance.targetSelector();
-        //string action = possible_moves[Random.Range(0, 3)];
-
-
+       
         // selects action using q-learning
-        string action = move_decider(target, Vector3.Distance(transform.position, target.position));
-
-        Debug.Log(action);
+        int action = move_decider(Player.instance.percent_full());
 
         // executes the actions
         Tasks(action);
     }
 
 
-    string move_decider(Transform target, float distance_from_target)
+    int move_decider(int percent)
     {
-        string action = QLearner(target,distance_from_target);
+        //action = QLearner(percent);
+        return GO_TO_TARGET;
+    }
+
+    // HYPERPARAMETERS:
+    double gamma = 0.3;
+    double epsilon = 0.2;
+    double alpha = 0.2;
+
+    int QLearner(int percent)
+    {
+        
+        int rnd = Random.Range(0,POSSIBLE_MOVES);
+       
+        int currentstate = define_state(percent);
+
+        if (rnd < epsilon)
+            action = Random.Range(0, POSSIBLE_MOVES);
+        else
+            action = getAction(currentstate);
+
+        int nextstate = getNextState();
+
+        double reward = R[currentstate,action];
+
+        double currentQ = Q[currentstate, action];
+        double maxQ = getMaxQ(nextstate);
+
+        double q = (1 - alpha) * currentQ + alpha * (reward + gamma * maxQ);
+
+        Q[currentstate, action] = q;
+
         return action;
     }
+    
 
-    string QLearner(Transform target, float distance_from_target)
+    int getNextState()
     {
-        int POSSIBLE_MOVES = possible_moves.Count;
-        int rnd = Random.Range(0,POSSIBLE_MOVES);
+        int percent = Player.instance.get_player_gold_weight() + Player.instance.last_loot.loot_weight;
+        percent = (100 * percent)/ Player.instance.CAPACITY;
 
-        return possible_moves[rnd];
+        return define_state(percent);
     }
 
 
-    void init()
+    int define_state(int percent)
     {
+        int plyr_state = (percent*5)/100;
 
+        if (plyr_state > 5)
+            plyr_state = 5;
+
+        return plyr_state;
     }
 
+    int getAction(int currentstate)
+    {
+        double maxVal = double.MinValue;
+        int final_action = 0;
 
-    void Tasks(string action)
+        for (int i = 0; i < POSSIBLE_MOVES; i++)
+        {
+            double qaction = Q[currentstate,i];
+            if (qaction > maxVal)
+            {
+                maxVal = qaction;
+                final_action = i;
+            }
+        }
+
+        return final_action;
+    }
+
+    double getMaxQ(int state)
+    {
+        double maxVal = double.MinValue;
+        
+        for (int i = 0; i < POSSIBLE_MOVES; i++)
+        {
+            double qvalue = Q[state, i];
+            if (qvalue > maxVal)
+            {
+                maxVal = qvalue;
+            }
+        }
+
+        return maxVal;
+    }
+
+    public void EnvReset()
+    {
+        transform.position = start_pos;
+        Player.instance.player_reset();
+        Timer.instance.timer_reset();
+    }
+
+    void Tasks(int action)
     {
         // go to selected target and collect gold
-        if (action == "gototarget")
+        if (action == GO_TO_TARGET)
         {
             agent.SetDestination(target.position);
         }
 
         // go to exit
-        if (action == "gotoexit")
+        if (action == GO_TO_EXIT)
         {
             agent.SetDestination(Astar.instance.exit.transform.position);
         }
 
-        // drop treasure
-        if (action == "droptreasure")
-        {
-            Player.instance.drop_treasure_at_exit();
-        }
+        //// drop treasure
+        //if (action == "droptreasure")
+        //{
+        //    Player.instance.drop_treasure_at_exit();
+        //}
     }
 }
