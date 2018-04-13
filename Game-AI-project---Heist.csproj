@@ -295,6 +295,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\C&amp;C_Pack\Goblin_rouge\Script\Goblin_ro_ctrl.cs" />
+    <Compile Include="Assets\Scripts\Activate.cs" />
     <Compile Include="Assets\Scripts\AlarmChest.cs" />
     <Compile Include="Assets\Scripts\Astar.cs" />
     <Compile Include="Assets\Scripts\Bullet.cs" />
@@ -310,6 +311,7 @@
     <Compile Include="Assets\Scripts\PlanningDone.cs" />
     <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\Scripts\PQ.cs" />
+    <Compile Include="Assets\Scripts\QLearning.cs" />
     <Compile Include="Assets\Scripts\Timer.cs" />
     <Compile Include="Assets\Scripts\Treasure.cs" />
     <Compile Include="Assets\Scripts\Turret.cs" />

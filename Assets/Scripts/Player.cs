@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour {
 	
@@ -20,6 +21,8 @@ public class Player : MonoBehaviour {
 	private Animator anim;
 	private GameObject current_treasure;
 	private Loot current_loot;
+
+    public Image lootBar;
 
     private void Awake()
     {
@@ -47,6 +50,7 @@ public class Player : MonoBehaviour {
 		update_time_to_exit();
 		update_flee_time();
 		update_player_motion();
+        lootUI();
     }
 
 	private void update_time_to_exit()
@@ -225,5 +229,11 @@ public class Player : MonoBehaviour {
 		}
 		return found_exchange;
 	}
+
+    public void lootUI()
+    {
+        lootBar.fillAmount = get_looting_time() / loot_timing;
+    }
+
 }
 
