@@ -448,7 +448,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faa7e12a24a3df34fac09fa2a6a636a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AutoMove: 0
   astar: {fileID: 1358778914}
   gameover: {fileID: 215412500}
 --- !u!1 &333504148
@@ -1776,6 +1775,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   start: {fileID: 1538538892}
+  target: {fileID: 0}
   targets: []
   exit: {fileID: 141866641}
   targetradius: 1
@@ -1783,13 +1783,14 @@ MonoBehaviour:
   obs:
     serializedVersion: 2
     m_Bits: 512
+  AutoMove: 0
 --- !u!114 &1358778920
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1358778914}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 909b9b446bad4ac45b525a53a3cea132, type: 3}
   m_Name: 
@@ -1952,7 +1953,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CAPACITY: 20
   flee: 0
-  agent_type: 1
+  agent_type: 2
   gold_weight_till_now: 0
 --- !u!114 &1500728076
 MonoBehaviour:
@@ -1965,6 +1966,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49403b1d43b4d374f8a11f8e1595a0ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  busy: 0
 --- !u!1001 &1538538891
 Prefab:
   m_ObjectHideFlags: 0

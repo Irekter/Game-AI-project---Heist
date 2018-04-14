@@ -11,15 +11,17 @@ public class Treasure : MonoBehaviour
     public float breaking_time = 2;
 	public bool alarmed = false;
 	public bool secured = false;
+    public static Treasure instance;
 
     private void Start()
     {
-		set_looting_time();
+        instance = this;
+        treasure_reset();
     }
 
 	private void set_looting_time()
     {
-		looting_time = (float)gold_weight / (float)10;
+		looting_time = (float)gold_weight / (float)20;
     }
 
     public void empty_treasure()
@@ -37,6 +39,11 @@ public class Treasure : MonoBehaviour
 		breaking_time = 0;
 		return treasure_loot;
 	}
+
+    public void treasure_reset()
+    {
+        set_looting_time();
+    }
 		
 	// Varun's Alarmed Treasure Code
 	/*

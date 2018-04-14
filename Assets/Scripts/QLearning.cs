@@ -13,12 +13,12 @@ public class QLearning : MonoBehaviour {
     double[,] Q = new double[6,2];
     double[,] R = { {2,-1 },{2, -1},{2,-1},{2,-1},{2,0 },{-1,2} };
     public static QLearning instance;
+    
 
     // ACTIONS:
     const int GO_TO_TARGET = 0;
     const int GO_TO_EXIT = 1;
     const int POSSIBLE_MOVES = 2;
-
     Vector3 start_pos;
 
     void Awake()
@@ -44,7 +44,7 @@ public class QLearning : MonoBehaviour {
         {
             EnvReset();
         }
-        target = Astar.instance.targetSelector();
+        //target = Astar.instance.targetSelector();
         if (Vector3.Distance(transform.position, Astar.instance.exit.transform.position) <= 1)
             Player.instance.drop_treasure_at_exit();
 
@@ -58,8 +58,6 @@ public class QLearning : MonoBehaviour {
 
         // executes the actions
         Tasks(action);
-
-
     }
 
 
@@ -80,8 +78,6 @@ public class QLearning : MonoBehaviour {
         int rnd = Random.Range(0,POSSIBLE_MOVES);
        
         int currentstate = define_state(percent);
-        //Debug.Log("currentstate: " + currentstate);
-
 
         if (rnd < epsilon)
             action = Random.Range(0, POSSIBLE_MOVES);
@@ -101,6 +97,7 @@ public class QLearning : MonoBehaviour {
         Q[currentstate, action] = q;
 
         epsilon = 0.9 * epsilon;
+        //Debug.Log(epsilon);
         return action;
     }
     
@@ -164,6 +161,7 @@ public class QLearning : MonoBehaviour {
         Player.instance.player_reset();
         Timer.instance.timer_reset();
         Astar.instance.reset();
+        Treasure.instance.treasure_reset();
     }
 
     void Tasks(int action)
@@ -171,7 +169,8 @@ public class QLearning : MonoBehaviour {
         // go to selected target and collect gold
         if (action == GO_TO_TARGET)
         {
-            agent.SetDestination(target.position);
+            Astar.instance.move();
+            move.instance.autoMove(Grid.instance.final_path);
         }
 
         // go to exit

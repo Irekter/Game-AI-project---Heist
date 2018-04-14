@@ -9,6 +9,7 @@ public class move : MonoBehaviour {
     Grid grid;
     private NavMeshAgent agent;
     Astar astar;
+    public static move instance;
 
     private void Awake()
     {
@@ -16,12 +17,18 @@ public class move : MonoBehaviour {
 	    agent = player.GetComponent<NavMeshAgent>();
     }
 
-    void Update()
+    private void Start()
     {
-        autoMove(grid.final_path);
+        instance = this;
     }
 
-    void autoMove(List<Node> mover)
+    void Update()
+    {
+        if (Astar.instance.AutoMove)
+            autoMove(grid.final_path);
+    }
+
+    public void autoMove(List<Node> mover)
     {
         if (mover.Count >= 2)
         {

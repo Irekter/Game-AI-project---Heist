@@ -7,14 +7,13 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
 
-    public bool AutoMove;
     public GameObject astar;
     public Text gameover;
 
 
     private void Awake()
     {
-        Time.timeScale = 2;
+        Time.timeScale = 100;
     }
 
     void Update () {
@@ -27,10 +26,10 @@ public class GameManager : MonoBehaviour {
             Time.timeScale = 0;
         }
 
-        if (AutoMove)
-            astar.SetActive(true);
-        else
-            astar.SetActive(false);
+        //if (AutoMove)
+        //    astar.SetActive(true);
+        //else
+        //    astar.SetActive(false);
     }
 
 }

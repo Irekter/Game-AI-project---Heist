@@ -10,11 +10,12 @@ public class Grid : MonoBehaviour {
     int num_of_grid_x, num_of_grid_y;
     public float node_diameter;
     public Transform plyr;
-
+    public static Grid instance;
     Node[,] nodes;
 
     void Start()
     {
+        instance = this;
         node_diameter = 2 * node_size;
         num_of_grid_x = Mathf.RoundToInt( gridSize.x / node_diameter);
         num_of_grid_y = Mathf.RoundToInt( gridSize.y / node_diameter);
