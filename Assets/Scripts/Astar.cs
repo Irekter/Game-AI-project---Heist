@@ -14,7 +14,7 @@ public class Astar : MonoBehaviour {
     Grid grid;
     public GameObject[] targets;
     public GameObject exit;
-    List<GameObject> trgts;
+    public List<GameObject> trgts;
     List<GameObject> opened_treasures;
     public GameObject[] coins;
     public LayerMask obs;
@@ -54,7 +54,8 @@ public class Astar : MonoBehaviour {
                 mindistance = currentDistance;
             }
         }
-
+        if(target!=null)
+            Player.instance.set_current_treasure(target.gameObject);
         return target;
     }
 
@@ -76,7 +77,7 @@ public class Astar : MonoBehaviour {
                 {
                     // returns loot attributes and sets player breaking time and treasure breaking time set to zero
                     target.GetComponent<Treasure>().open_treasure();
-                    Player.instance.set_current_treasure(toberemoved);
+
                 }
             }
         }

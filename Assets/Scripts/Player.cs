@@ -28,7 +28,7 @@ public class Player : MonoBehaviour {
 
 	private Loot current_loot;
     public Loot last_loot;
-	public Treasure next_treasure;
+    public GameObject next_treasure;
 	private List<Loot> player_loot;
 
     private void Awake()
@@ -77,7 +77,7 @@ public class Player : MonoBehaviour {
 	private void update_time_to_exit()
 	{
 		float speed = agent.speed;
-		if(speed != 0) 
+		if(speed > 0) 
 		{
 			time_to_exit = Vector3.Distance(agent.transform.position, exit_target)/speed;
 			time_to_exit += (float)1.5;
@@ -224,6 +224,7 @@ public class Player : MonoBehaviour {
 	{
 		return training;
 	}
+
 	
 	public int percent_full()
 	{
@@ -321,25 +322,367 @@ public class Player : MonoBehaviour {
         current_treasure = null;
     }
 
-    // State 
 
 
+    // returns 1 if full
+    // else 0
     public int weight_state() {
-		float state = (float)(gold_weight * 100) / (float)CAPACITY;
-		state = (int)(state / 20);
-        if(state > 5)
+        if(is_full())
         {
-            state = 5;
+            return 1;
         }
-        return (int)state;
+        return 0;
 	}
 
+
+    // returns 0 if distance to exit is greater than distance to the target
+    // else return 1
+    public int dist_to_trgt_state()
+    {
+        float dist_to_trgt = Vector3.Distance(transform.position, current_treasure.transform.position);
+        float dist_to_exit = Vector3.Distance(transform.position, exit_target);
+
+        if (dist_to_trgt < dist_to_exit)
+            return 0;
+        return 1;
+    }
+
+
+    // if the time to target is greater than the timer return 0
+    // else return 1
+    public int time_state()
+    {
+        float time_to_trgt;
+        float speed = agent.speed;
+        if (speed > 0)
+        {
+            time_to_trgt = Vector3.Distance(transform.position, current_treasure.transform.position) / speed;
+            time_to_trgt += current_treasure.GetComponent<Treasure>().breaking_time;
+            time_to_trgt += Vector3.Distance(exit_target, current_treasure.transform.position) / speed;
+        }
+        else
+            return 1;
+
+        if (Timer.instance.timelimit > time_to_trgt)
+            return 0;
+        
+        return 1;
+    }
+
+    // if flee flag set return 1
+    // else return 0
 	public int flee_state() {
 		if (flee) {
 			return 1;
 		}
 		return 0;
 	}
+
+
+    // if the player is chasing a secured treasure then return 1
+    // else return 0
+    public int detection_state()
+    {
+        if(current_treasure.GetComponent<Treasure>().secured){
+            return 1;
+        }
+        return 0;
+    }
+
+
+    // returns 1 when near the current treasure
+    // else returns 0
+    public int at_open_treasure_state()
+    {
+        if(Vector3.Distance(transform.position,current_treasure.transform.position) <= 1)
+        {
+            return 1;
+        }
+        return 0;
+    }
+
+    // returns 1 if at exit 
+    // else return 0
+    public int at_exit_state()
+    {
+        if (Vector3.Distance(transform.position, exit_target) <= 1)
+        {
+            return 1;
+        }
+        return 0;
+    }
+
+    // returns 1 when the gold remainging percentage is greater than 20%    //collect treasure
+    // else return 0    // goto exit
+    public int value_degradation_state()
+    {
+        int gold_remaining_percent = (int)(100 * (Timer.instance.timelimit / Timer.instance.resetTimer));
+
+        if (gold_remaining_percent >= 20)
+            return 1;
+
+        return 0;
+    }
+
+
+    public int visited_all_state()
+    {
+        if (Astar.instance.trgts.Count == 0)
+            return 1;
+        return 0;
+    }
+
+    public int get_state()
+    {
+        int state = 0;
+        int power = 0;
+
+        if (weight_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (dist_to_trgt_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (time_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (flee_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (detection_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (at_open_treasure_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (at_exit_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (value_degradation_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (visited_all_state() == 1)
+            state += (int)Math.Pow(2, power);
+
+        return state;
+    }
+
+    public int get_next_state(int action)
+    {
+        // move = go to target
+        if (action == QLearning.GO_TO_TARGET)
+        {
+            return go_to_target_next_state();
+        }
+        if(action == QLearning.GO_TO_EXIT)
+        {
+            return go_to_exit_next_state();
+        }
+        if(action == QLearning.PICK_UP_ITEM)
+        {
+            return pick_up_next_state();
+        }
+        if(action == QLearning.DROP_TREASURE)
+        {
+            return drop_treasure_next_state();
+        }
+        if(action == QLearning.SKIP_TARGET)
+        {
+            return skip_trgt_next_state();
+        }
+
+        return get_state();
+    }
+
+    public int go_to_target_next_state()
+    {
+        int state = 0;
+        int power = 0;
+
+        // weight state set to 1
+        state += (int)Math.Pow(2, power);
+        power++;
+
+        // dist to target set to 0
+        power++;
+
+        // time to target set to 0
+        power++;
+
+
+        if (flee_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+
+        if ((detection_state() == 1) || (current_treasure.GetComponent<Treasure>().secured))
+            state += (int)Math.Pow(2, power);
+        power++;
+
+
+        // at_open_treasure set to 1
+        state += (int)Math.Pow(2, power);
+        power++;
+
+
+        // at_exit set to 0
+        power++;
+
+
+        if (value_degradation_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (visited_all_state() == 1)
+            state += (int)Math.Pow(2, power);
+
+        return state;
+    }
+
+    public int go_to_exit_next_state()
+    {
+        int state = 0;
+        int power = 0;
+
+        if (weight_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+
+        // returns 1 as the distance to exit is negligible
+        state += (int)Math.Pow(2, power);
+        power++;
+
+
+        if (time_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+
+        // flee state set to 0 as at exit
+        power++;
+
+
+        if (detection_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+
+        // set to 0 as not at treasure
+        power++;
+
+        // at exit state always 1
+        state += (int)Math.Pow(2, power);
+        power++;
+
+        // remains same
+        if (value_degradation_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (visited_all_state() == 1)
+            state += (int)Math.Pow(2, power);
+
+        return state;
+    }
+
+    public int drop_treasure_next_state()
+    {
+        int state = 0;
+        int power = 0;
+
+        power++;
+        if (dist_to_trgt_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (time_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (flee_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (detection_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (at_open_treasure_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (at_exit_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (value_degradation_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (visited_all_state() == 1)
+            state += (int)Math.Pow(2, power);
+
+        return state;
+    }
+
+    public int pick_up_next_state()
+    {
+        int state = 0;
+        int power = 0;
+
+     
+        state += (int)Math.Pow(2, power);
+        power++;
+        if (dist_to_trgt_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (time_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (flee_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (detection_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (at_open_treasure_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (at_exit_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (value_degradation_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (visited_all_state() == 1)
+            state += (int)Math.Pow(2, power);
+
+        return state;
+    }
+
+    public int skip_trgt_next_state()
+    {
+        int state = 0;
+        int power = 0;
+
+        if (weight_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (dist_to_trgt_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (time_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (flee_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (detection_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (at_open_treasure_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (at_exit_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (value_degradation_state() == 1)
+            state += (int)Math.Pow(2, power);
+        power++;
+        if (visited_all_state() == 1)
+            state += (int)Math.Pow(2, power);
+
+        return state;
+    }
+
 
 }
 

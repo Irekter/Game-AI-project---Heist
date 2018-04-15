@@ -17,14 +17,20 @@ public class QLearning : MonoBehaviour {
                    ,{2,-1, 1}
                    ,{2,0, 1}
                    ,{-1,2, 1}};
+
+
     public static QLearning instance;
     
 
     // ACTIONS:
-    const int GO_TO_TARGET = 0;
-    const int GO_TO_EXIT = 1;
-    const int PICK_UP_ITEM = 2;
-    const int POSSIBLE_MOVES = 3;
+    public const int GO_TO_TARGET = 0;
+    public const int GO_TO_EXIT = 1;
+    public const int PICK_UP_ITEM = 2;
+    public const int DROP_TREASURE = 3;
+    public const int SKIP_TARGET = 4;
+    public const int FLEE = 5;
+
+    const int POSSIBLE_MOVES = 6;
     Vector3 start_pos;
 
     void Awake()
@@ -54,6 +60,7 @@ public class QLearning : MonoBehaviour {
         // selects action using q-learning
         if (!busy)
         {
+            target = Astar.instance.targetSelector();
             action = move_decider();
             busy = true;
             // executes the actions
@@ -76,6 +83,7 @@ public class QLearning : MonoBehaviour {
         return action;
     }
 
+
     // HYPERPARAMETERS:
     double gamma = 0.3;
     double epsilon = 0.2;
@@ -86,7 +94,7 @@ public class QLearning : MonoBehaviour {
         
         int rnd = Random.Range(0,POSSIBLE_MOVES);
      
-        int currentstate = Player.instance.weight_state();
+        int currentstate = Player.instance.get_state();
 
         if (rnd < epsilon)
             action = Random.Range(0, POSSIBLE_MOVES);
@@ -94,7 +102,7 @@ public class QLearning : MonoBehaviour {
             action = getAction(currentstate);
         Debug.Log("action: " + action);
 
-        int nextstate = getNextState();
+        int nextstate = Player.instance.get_next_state(action);
 
         double reward = R[currentstate,action];
 
@@ -106,22 +114,10 @@ public class QLearning : MonoBehaviour {
         Q[currentstate, action] = q;
 
         epsilon = 0.9 * epsilon;
-        //Debug.Log(epsilon);
         return action;
     }
-    
 
-    int getNextState()
-    {
-        int current_weight_state = Player.instance.weight_state();
-        if (current_weight_state > 4)
-        {
-            return 5;
-        }
-        return (current_weight_state + 1);
-    }
 
-   
     int getAction(int currentstate)
     {
         double maxVal = double.MinValue;
@@ -164,14 +160,14 @@ public class QLearning : MonoBehaviour {
         Astar.instance.reset();
     }
 
-    void Tasks(int action)
+    void Tasks(int selected_action)
     {
         // go to selected target and collect gold
-        if (action == GO_TO_TARGET)
+        if (selected_action == GO_TO_TARGET)
         {
-            target = Astar.instance.targetSelector();
             if (target != null)
             {
+                Player.instance.next_treasure = target.gameObject;
                 Grid.instance.final_path = Astar.instance.pathfinder(agent.transform.position, target.position);
                 move.instance.autoMove(Grid.instance.final_path);
             }
@@ -180,7 +176,7 @@ public class QLearning : MonoBehaviour {
         }
 
         // go to exit
-        if (action == GO_TO_EXIT)
+        if (selected_action == GO_TO_EXIT)
         {
             target = Astar.instance.exit.transform;
             Grid.instance.final_path = Astar.instance.pathfinder(agent.transform.position, target.position);
@@ -189,7 +185,7 @@ public class QLearning : MonoBehaviour {
         }
 
         // drop treasure
-        if (action == PICK_UP_ITEM)
+        if (selected_action == PICK_UP_ITEM)
         {
             Astar.instance.exchange_loot(); 
         }
