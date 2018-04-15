@@ -7,6 +7,7 @@ using UnityEngine.AI;
 
 public class Astar : MonoBehaviour {
 
+    const float TARGET_RADIUS = 1f;
     public static Astar instance;
     public Transform start;
     public Transform target;
@@ -15,7 +16,6 @@ public class Astar : MonoBehaviour {
     public GameObject exit;
     List<GameObject> trgts;
     List<GameObject> opened_treasures;
-    public float targetradius = 2f;
     public GameObject[] coins;
     public LayerMask obs;
     public bool AutoMove;
@@ -36,135 +36,101 @@ public class Astar : MonoBehaviour {
 
     private void Update()
     {
-        if (Astar.instance.AutoMove)
-            move();
+        open_treasure();
+        
     }
-
-    public void move()
-    {
-        if (exit != null && exit.transform.childCount > 0)
-        {
-            if (Player.instance.flee)
-            {
-                target = exit.transform;
-            }
-            else if (Player.instance.is_full() || (trgts.Count == 0))
-            {
-                target = exit.transform;
-
-                // if near target drop gold
-                if ((start.position - target.position).magnitude <= 1)
-                {
-                    if (trgts.Count == 0)
-                    {
-                        Debug.Log("target count 0 adding opened treasures");
-                        trgts.AddRange(opened_treasures);
-                        opened_treasures.Clear();
-                    }
-                    target = targetSelector();
-                    Player.instance.drop_treasure_at_exit();
-                }
-            }
-            else
-            {
-                target = targetSelector();
-            }
-            grid.final_path = pathfinder(start.position, target.position);
-        }
-        else
-        {
-            Application.Quit();
-        }
-    }
-
 
     public Transform targetSelector()
     {
         float mindistance = int.MaxValue;
-        
-        GameObject toberemoved = null;
+        target = null;
 
-        foreach (GameObject end in trgts)
+        foreach (GameObject possible_trgt in trgts)
         {
-            if (Vector3.Distance(end.transform.position, start.position) < mindistance)
+            float currentDistance = Vector3.Distance(possible_trgt.transform.position, start.position);
+            if (currentDistance < mindistance)
             {
-                target = end.transform;
-                toberemoved = end;
-                mindistance = Vector3.Distance(target.position, start.position);
+                target = possible_trgt.transform;
+                mindistance = currentDistance;
             }
         }
 
-        if (Vector3.Distance(target.position, start.position) <= targetradius)
-        {
-            if (Player.instance.agent_type == 1)
-            {
-                trgts.Remove(toberemoved);
-
-
-
-                // looting the reached target
-                if (target.gameObject != exit)
-                {
-                    // returns loot attributes and sets player breaking time and treasure breaking time set to zero
-                    Loot treasure_loot = target.GetComponent<Treasure>().open_treasure();
-
-                    // after opening check if we can take the treasure
-                    if (Player.instance.exchange_loot(treasure_loot))
-                    {
-                        // performs looting
-                        Player.instance.set_current_treasure(toberemoved);
-                        target.GetComponent<Treasure>().empty_treasure();
-                    }
-                    else
-                    {
-                        // can't loot now so we keep track to loot in next iteration
-                        if (toberemoved.GetComponent<Treasure>().gold_weight <= Player.instance.CAPACITY)
-                        {
-                            // tracks treasures that were opened but not looted yet
-                            opened_treasures.Add(toberemoved);
-                        }
-                    }
-
-                }
-            }
-
-
-
-
-            if (Player.instance.agent_type == 2)
-            {
-                trgts.Remove(toberemoved);
-                
-
-
-                // looting the reached target
-                if (target.gameObject != exit)
-                {
-                    // returns loot attributes and sets player breaking time and treasure breaking time set to zero
-					Loot treasure_loot = target.GetComponent<Treasure>().open_treasure();
-
-                    // after opening check if we can take the treasure
-					if (Player.instance.pick_new_loot(treasure_loot))
-                    {
-                        // performs looting
-						Player.instance.set_current_treasure (toberemoved);
-						target.GetComponent<Treasure>().empty_treasure();  
-                    }
-                    else
-                    {
-                        // can't loot now so we keep track to loot in next iteration
-                        if (toberemoved.GetComponent<Treasure>().gold_weight <= Player.instance.CAPACITY)
-                        {
-                            // tracks treasures that were opened but not looted yet
-                            opened_treasures.Add(toberemoved);
-                        }
-                    }
-
-                }
-            }
-        }
         return target;
     }
+
+
+    public void open_treasure()
+    {
+        GameObject toberemoved = null;
+
+        if (target != null)
+        {
+            if (Vector3.Distance(target.position, start.position) <= TARGET_RADIUS)
+            {
+                toberemoved = target.gameObject;
+
+                trgts.Remove(toberemoved);
+
+                // looting the reached target
+                if (target.gameObject != exit)
+                {
+                    // returns loot attributes and sets player breaking time and treasure breaking time set to zero
+                    target.GetComponent<Treasure>().open_treasure();
+                    Player.instance.set_current_treasure(toberemoved);
+                }
+            }
+        }
+    }
+
+    public void pick_up_loot()
+    {
+    
+        // after opening check if we can take the treasure
+        if (Player.instance.pick_new_loot())
+        {
+            // performs looting
+            target.GetComponent<Treasure>().empty_treasure();
+        }
+        else
+        {
+            // can't loot now so we keep track to loot in next iteration
+            GameObject toberemoved = Player.instance.get_current_treasure();
+            if (toberemoved.GetComponent<Treasure>().gold_weight <= Player.instance.CAPACITY)
+            {
+                // tracks treasures that were opened but not looted yet
+                opened_treasures.Add(toberemoved);
+            }
+        }
+    }
+
+    public void exchange_loot()
+    {
+        GameObject toberemoved = Player.instance.get_current_treasure();
+        if (toberemoved != null)
+        {
+            // after opening check if we can take the treasure
+            if (Player.instance.exchange_loot())
+            {
+                // performs looting
+                toberemoved.GetComponent<Treasure>().empty_treasure();
+            }
+            else
+            {
+                Player.instance.remove_current_treasure();
+                // can't loot now so we keep track to loot in next iteration
+                if (toberemoved.GetComponent<Treasure>().gold_weight <= Player.instance.CAPACITY)
+                {
+                    // tracks treasures that were opened but not looted yet
+                    opened_treasures.Add(toberemoved);
+                }
+            }
+        }
+        else
+            QLearning.instance.busy = false;
+    }
+
+
+
 
     public List<Node> pathfinder(Vector3 start_pos, Vector3 target_pos)
     {
@@ -277,5 +243,10 @@ public class Astar : MonoBehaviour {
         exit = GameObject.FindGameObjectWithTag("Exit");
         coins = GameObject.FindGameObjectsWithTag("Coin");
         trgts = targets.ToList();
+
+        foreach (GameObject t in trgts)
+        {
+            t.GetComponent<Treasure>().treasure_reset();
+        }
     }
 }

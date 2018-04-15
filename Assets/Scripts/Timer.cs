@@ -9,11 +9,9 @@ public class Timer : MonoBehaviour {
     public Text timer;
     public float timelimit = 60f;
     public float resetTimer;
-    private float start_time;
 
     private void Awake()
     {
-        Time.timeScale = 2;
     }
     // Use this for initialization
     void Start () {

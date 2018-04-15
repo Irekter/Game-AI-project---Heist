@@ -9,11 +9,11 @@ public class GameManager : MonoBehaviour {
 
     public GameObject astar;
     public Text gameover;
-
+    public Text endGameGoldValue;
 
     private void Awake()
     {
-        Time.timeScale = 100;
+        //Time.timeScale = 2;
     }
 
     void Update () {
@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour {
         {
             gameover.text = "GAME OVER!";
             Time.timeScale = 0;
+            endGameGoldValue.text = "Gold Collected : " + Player.instance.get_player_gold_value();
         }
 
         //if (AutoMove)

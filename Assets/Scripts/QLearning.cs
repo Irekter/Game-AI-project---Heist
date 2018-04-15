@@ -10,15 +10,21 @@ public class QLearning : MonoBehaviour {
     NavMeshAgent agent;
     GameObject[] targets;
     int action;
-    double[,] Q = new double[6,2];
-    double[,] R = { {2,-1 },{2, -1},{2,-1},{2,-1},{2,0 },{-1,2} };
+    double[,] Q = new double[6,POSSIBLE_MOVES];
+    double[,] R = { {2,-1, 1}
+                   ,{2, -1, 1}
+                   ,{2,-1, 1}
+                   ,{2,-1, 1}
+                   ,{2,0, 1}
+                   ,{-1,2, 1}};
     public static QLearning instance;
     
 
     // ACTIONS:
     const int GO_TO_TARGET = 0;
     const int GO_TO_EXIT = 1;
-    const int POSSIBLE_MOVES = 2;
+    const int PICK_UP_ITEM = 2;
+    const int POSSIBLE_MOVES = 3;
     Vector3 start_pos;
 
     void Awake()
@@ -40,30 +46,33 @@ public class QLearning : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        if (Player.instance.gold_weight_till_now == 32)
+        if (Player.instance.get_gold_weight_at_exit() == 32)
         {
             EnvReset();
         }
-        //target = Astar.instance.targetSelector();
-        if (Vector3.Distance(transform.position, Astar.instance.exit.transform.position) <= 1)
-            Player.instance.drop_treasure_at_exit();
-
 
         // selects action using q-learning
         if (!busy)
         {
-            action = move_decider(Player.instance.percent_full());
+            action = move_decider();
             busy = true;
+            // executes the actions
+            Tasks(action);
         }
 
-        // executes the actions
-        Tasks(action);
+        if(action != 2)
+        {
+            Tasks(action);
+
+        }
+
+
     }
 
 
-    int move_decider(int percent)
+    int move_decider()
     {
-        action = QLearner(percent);
+        action = QLearner();
         return action;
     }
 
@@ -72,12 +81,12 @@ public class QLearning : MonoBehaviour {
     double epsilon = 0.2;
     double alpha = 0.2;
 
-    int QLearner(int percent)
+    int QLearner()
     {
         
         int rnd = Random.Range(0,POSSIBLE_MOVES);
-       
-        int currentstate = define_state(percent);
+     
+        int currentstate = Player.instance.weight_state();
 
         if (rnd < epsilon)
             action = Random.Range(0, POSSIBLE_MOVES);
@@ -104,23 +113,15 @@ public class QLearning : MonoBehaviour {
 
     int getNextState()
     {
-        int percent = Player.instance.get_player_gold_weight() + Player.instance.last_loot.loot_weight;
-        percent = (100 * percent)/ Player.instance.CAPACITY;
-
-        return define_state(percent);
+        int current_weight_state = Player.instance.weight_state();
+        if (current_weight_state > 4)
+        {
+            return 5;
+        }
+        return (current_weight_state + 1);
     }
 
-
-    int define_state(int percent)
-    {
-        int plyr_state = (percent*5)/100;
-
-        if (plyr_state > 5)
-            plyr_state = 5;
-
-        return plyr_state;
-    }
-
+   
     int getAction(int currentstate)
     {
         double maxVal = double.MinValue;
@@ -142,7 +143,7 @@ public class QLearning : MonoBehaviour {
     double getMaxQ(int state)
     {
         double maxVal = double.MinValue;
-        
+
         for (int i = 0; i < POSSIBLE_MOVES; i++)
         {
             double qvalue = Q[state, i];
@@ -161,7 +162,6 @@ public class QLearning : MonoBehaviour {
         Player.instance.player_reset();
         Timer.instance.timer_reset();
         Astar.instance.reset();
-        Treasure.instance.treasure_reset();
     }
 
     void Tasks(int action)
@@ -169,22 +169,29 @@ public class QLearning : MonoBehaviour {
         // go to selected target and collect gold
         if (action == GO_TO_TARGET)
         {
-            Astar.instance.move();
-            move.instance.autoMove(Grid.instance.final_path);
+            target = Astar.instance.targetSelector();
+            if (target != null)
+            {
+                Grid.instance.final_path = Astar.instance.pathfinder(agent.transform.position, target.position);
+                move.instance.autoMove(Grid.instance.final_path);
+            }
+            else
+                busy = false;
         }
 
         // go to exit
         if (action == GO_TO_EXIT)
         {
-            agent.SetDestination(Astar.instance.exit.transform.position);
-            //Player.instance.drop_treasure_at_exit();
-            //Astar.instance.target = Astar.instance.exit.transform;
+            target = Astar.instance.exit.transform;
+            Grid.instance.final_path = Astar.instance.pathfinder(agent.transform.position, target.position);
+            move.instance.autoMove(Grid.instance.final_path);
+            Player.instance.drop_treasure_at_exit();
         }
 
-        //// drop treasure
-        //if (action == DROP_TREASURE)
-        //{
-        //    Player.instance.drop_treasure_at_exit();
-        //}
+        // drop treasure
+        if (action == PICK_UP_ITEM)
+        {
+            Astar.instance.exchange_loot(); 
+        }
     }
 }
