@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour {
     public Text gameover;
     public Text endGameGoldValue;
 
-    private void Awake()
+void Awake()
     {
         //Time.timeScale = 2;
     }
@@ -22,9 +22,10 @@ public class GameManager : MonoBehaviour {
 
         if (Timer.instance.timelimit <= 0)
         {
-            gameover.text = "GAME OVER!";
-            Time.timeScale = 0;
+            //gameover.text = "GAME OVER!";
+            //Time.timeScale = 0;
             endGameGoldValue.text = "Gold Collected : " + Player.instance.get_player_gold_value();
+            QLearning.instance.EnvReset();
         }
 
         //if (AutoMove)

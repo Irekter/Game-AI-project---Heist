@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour {
 	
@@ -11,10 +12,10 @@ public class Player : MonoBehaviour {
 	public int agent_type = 1;
 
 	public bool training = true;
-	private bool flee;
+	public bool flee;
 
-	private int gold_value;
-	private int gold_weight;
+	public int gold_value = 10;
+	private int gold_weight = 10;
 	private int gold_weight_at_exit;
 
 	private float time_to_exit;
@@ -30,6 +31,7 @@ public class Player : MonoBehaviour {
     public Loot last_loot;
     public GameObject next_treasure;
 	private List<Loot> player_loot;
+    public Image lootBar;
 
     private void Awake()
     {
@@ -51,6 +53,7 @@ public class Player : MonoBehaviour {
 		update_time_to_exit();
 		update_flee_flag();
 		update_player_motion();
+        LootUI();
     }
 
 	public void player_reset()
@@ -200,6 +203,8 @@ public class Player : MonoBehaviour {
             player_loot.Clear();
             QLearning.instance.busy = false;
         }
+        else
+            QLearning.instance.busy = false;
     }
 		
 	public bool is_accepting_loot(int loot_weight)
@@ -238,14 +243,12 @@ public class Player : MonoBehaviour {
 
 	private void destroyCoin()
 	{
-		if (current_treasure != null) {
             GameObject coin = current_treasure.transform.GetChild (0).gameObject;
             Destroy (coin);
             QLearning.instance.busy = false;
 			current_treasure = null;
             current_loot = null;
-        }
-	}
+   	}
 
 	public void add_loot(Loot treasure_loot)
 	{
@@ -339,22 +342,25 @@ public class Player : MonoBehaviour {
     // else return 1
     public int dist_to_trgt_state()
     {
-        float dist_to_trgt = Vector3.Distance(transform.position, current_treasure.transform.position);
-        float dist_to_exit = Vector3.Distance(transform.position, exit_target);
+        if (current_treasure != null)
+        {
+            float dist_to_trgt = Vector3.Distance(transform.position, current_treasure.transform.position);
+            float dist_to_exit = Vector3.Distance(transform.position, exit_target);
 
-        if (dist_to_trgt < dist_to_exit)
-            return 0;
+            if (dist_to_trgt < dist_to_exit)
+                return 0;
+        }
         return 1;
     }
 
 
-    // if the time to target is greater than the timer return 0
+    // if the time to target is lesser than the timer return 0
     // else return 1
     public int time_state()
     {
         float time_to_trgt;
         float speed = agent.speed;
-        if (speed > 0)
+        if (speed > 0 && current_treasure != null)
         {
             time_to_trgt = Vector3.Distance(transform.position, current_treasure.transform.position) / speed;
             time_to_trgt += current_treasure.GetComponent<Treasure>().breaking_time;
@@ -383,7 +389,7 @@ public class Player : MonoBehaviour {
     // else return 0
     public int detection_state()
     {
-        if(current_treasure.GetComponent<Treasure>().secured){
+        if(current_treasure != null && current_treasure.GetComponent<Treasure>().secured){
             return 1;
         }
         return 0;
@@ -394,7 +400,7 @@ public class Player : MonoBehaviour {
     // else returns 0
     public int at_open_treasure_state()
     {
-        if(Vector3.Distance(transform.position,current_treasure.transform.position) <= 1)
+        if(current_treasure != null && Vector3.Distance(transform.position,current_treasure.transform.position) <= 1)
         {
             return 1;
         }
@@ -684,5 +690,10 @@ public class Player : MonoBehaviour {
     }
 
 
+    // looting circle
+    public void LootUI()
+    {
+        lootBar.fillAmount = get_looting_time() / 10;
+    }
 }
 

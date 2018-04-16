@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
+using System.IO;
+using System.Text;
 
 public class QLearning : MonoBehaviour {
 
     Transform target;
     NavMeshAgent agent;
-    GameObject[] targets;
     int action;
-    double[,] Q = new double[6,POSSIBLE_MOVES];
+    double[,] Q = new double[STATES,POSSIBLE_MOVES];
     double[,] R = { {2,-1, 1}
                    ,{2, -1, 1}
                    ,{2,-1, 1}
@@ -20,7 +21,7 @@ public class QLearning : MonoBehaviour {
 
 
     public static QLearning instance;
-    
+    public bool Done;
 
     // ACTIONS:
     public const int GO_TO_TARGET = 0;
@@ -31,6 +32,8 @@ public class QLearning : MonoBehaviour {
     public const int FLEE = 5;
 
     const int POSSIBLE_MOVES = 6;
+    const int STATES = 512;
+    const string path = "./model.txt";
     Vector3 start_pos;
 
     void Awake()
@@ -42,7 +45,6 @@ public class QLearning : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
-        targets = Astar.instance.targets;
         action = 0;
         start_pos = gameObject.transform.position;
     }
@@ -52,10 +54,13 @@ public class QLearning : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        if (Player.instance.get_gold_weight_at_exit() == 32)
+        if (Done)
         {
             EnvReset();
         }
+
+        if (Player.instance.visited_all_state() == 1)
+            Player.instance.flee = true;
 
         // selects action using q-learning
         if (!busy)
@@ -63,17 +68,10 @@ public class QLearning : MonoBehaviour {
             target = Astar.instance.targetSelector();
             action = move_decider();
             busy = true;
-            // executes the actions
-            Tasks(action);
         }
 
-        if(action != 2)
-        {
-            Tasks(action);
-
-        }
-
-
+        // executes the actions
+        Tasks(action);
     }
 
 
@@ -92,10 +90,11 @@ public class QLearning : MonoBehaviour {
     int QLearner()
     {
         
-        int rnd = Random.Range(0,POSSIBLE_MOVES);
+        int rnd = Random.Range(0,2);
      
         int currentstate = Player.instance.get_state();
 
+        // random action according to epsilon-greedy 
         if (rnd < epsilon)
             action = Random.Range(0, POSSIBLE_MOVES);
         else
@@ -104,7 +103,7 @@ public class QLearning : MonoBehaviour {
 
         int nextstate = Player.instance.get_next_state(action);
 
-        double reward = R[currentstate,action];
+        double reward = rewardFunction(action);
 
         double currentQ = Q[currentstate, action];
         double maxQ = getMaxQ(nextstate);
@@ -113,10 +112,76 @@ public class QLearning : MonoBehaviour {
 
         Q[currentstate, action] = q;
 
+        // epsilon decaying
         epsilon = 0.9 * epsilon;
         return action;
     }
 
+
+    double rewardFunction(int selected_action)
+    {
+        double reward = 0; 
+
+        if(Player.instance.weight_state() == 1)
+        {
+            if (selected_action == GO_TO_EXIT)
+                reward += 2;
+            if (selected_action == FLEE)
+                reward += 1;
+        }
+
+        if(Player.instance.at_open_treasure_state() == 1)
+        {
+            if (selected_action == PICK_UP_ITEM)
+                reward += 2;
+        }
+
+        if(Player.instance.detection_state() == 1)
+        {
+            if (selected_action == SKIP_TARGET)
+                reward += 2;
+        }
+
+        if(Player.instance.at_exit_state() == 1)
+        {
+            if (selected_action == DROP_TREASURE)
+                reward += 2;
+            if (selected_action == GO_TO_TARGET)
+                reward += 1;
+        }
+
+        if (Player.instance.time_state() == 0)
+        {
+            if (selected_action == GO_TO_TARGET)
+                reward += 2;
+        }
+        else
+        {
+            if (selected_action == GO_TO_EXIT)
+                reward += 1;
+            if (selected_action == FLEE)
+                reward += 2;
+        }
+
+        if(Player.instance.value_degradation_state() == 1)
+        {
+            if (selected_action == GO_TO_TARGET)
+                reward += 2;
+        }
+        else
+        {
+            if (selected_action == SKIP_TARGET)
+                reward += 2;    
+        }
+
+        if(Player.instance.visited_all_state() == 1)
+        {
+            if (selected_action == FLEE)
+                reward += 2;
+        }
+
+        return reward;
+    }
 
     int getAction(int currentstate)
     {
@@ -154,7 +219,10 @@ public class QLearning : MonoBehaviour {
 
     public void EnvReset()
     {
+        createModel(Q);
         transform.position = start_pos;
+        busy = false;
+        Done = false;
         Player.instance.player_reset();
         Timer.instance.timer_reset();
         Astar.instance.reset();
@@ -181,13 +249,54 @@ public class QLearning : MonoBehaviour {
             target = Astar.instance.exit.transform;
             Grid.instance.final_path = Astar.instance.pathfinder(agent.transform.position, target.position);
             move.instance.autoMove(Grid.instance.final_path);
-            Player.instance.drop_treasure_at_exit();
+
+            if(Vector3.Distance(agent.transform.position, target.position) <= 1)
+                busy = false;
         }
 
-        // drop treasure
+        // pick items with smart exchange behavior
         if (selected_action == PICK_UP_ITEM)
         {
             Astar.instance.exchange_loot(); 
         }
+
+        // drops treasure
+        if(selected_action == DROP_TREASURE)
+        {
+            Player.instance.drop_treasure_at_exit();
+        }
+
+        // skip target
+        if (selected_action == SKIP_TARGET)
+        {
+            Astar.instance.skip_target();
+        }
+
+        if(selected_action == FLEE)
+        {
+            target = Astar.instance.exit.transform;
+            Grid.instance.final_path = Astar.instance.pathfinder(agent.transform.position, target.position);
+            move.instance.autoMove(Grid.instance.final_path);
+
+            if(Vector3.Distance(agent.transform.position, target.position) <= 1)
+                Done = true;
+        }
     }
+
+
+    void createModel(double[,] Q)
+    {
+        StringBuilder strb = new StringBuilder();
+
+        for (int i = 0; i < STATES;i++)
+        {
+            for (int j = 0; j < POSSIBLE_MOVES;j++)
+            {
+                strb.Append(Q[i, j]+"\n");
+            }
+        }
+
+        File.WriteAllText(path,strb.ToString());
+    }
+
 }

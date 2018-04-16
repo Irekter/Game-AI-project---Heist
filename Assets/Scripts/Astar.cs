@@ -37,7 +37,6 @@ public class Astar : MonoBehaviour {
     private void Update()
     {
         open_treasure();
-        
     }
 
     public Transform targetSelector()
@@ -77,7 +76,7 @@ public class Astar : MonoBehaviour {
                 {
                     // returns loot attributes and sets player breaking time and treasure breaking time set to zero
                     target.GetComponent<Treasure>().open_treasure();
-
+                    QLearning.instance.busy = false;
                 }
             }
         }
@@ -85,21 +84,23 @@ public class Astar : MonoBehaviour {
 
     public void pick_up_loot()
     {
-    
-        // after opening check if we can take the treasure
-        if (Player.instance.pick_new_loot())
+        if (Vector3.Distance(start.position, target.position) <= 1)
         {
-            // performs looting
-            target.GetComponent<Treasure>().empty_treasure();
-        }
-        else
-        {
-            // can't loot now so we keep track to loot in next iteration
-            GameObject toberemoved = Player.instance.get_current_treasure();
-            if (toberemoved.GetComponent<Treasure>().gold_weight <= Player.instance.CAPACITY)
+            // after opening check if we can take the treasure
+            if (Player.instance.pick_new_loot())
             {
-                // tracks treasures that were opened but not looted yet
-                opened_treasures.Add(toberemoved);
+                // performs looting
+                target.GetComponent<Treasure>().empty_treasure();
+            }
+            else
+            {
+                // can't loot now so we keep track to loot in next iteration
+                GameObject toberemoved = Player.instance.get_current_treasure();
+                if (toberemoved.GetComponent<Treasure>().gold_weight <= Player.instance.CAPACITY)
+                {
+                    // tracks treasures that were opened but not looted yet
+                    opened_treasures.Add(toberemoved);
+                }
             }
         }
     }
@@ -131,6 +132,12 @@ public class Astar : MonoBehaviour {
     }
 
 
+    public void skip_target()
+    {
+        if(trgts.Count()>0)
+            trgts.Remove(target.gameObject);
+        QLearning.instance.busy = false;
+    }
 
 
     public List<Node> pathfinder(Vector3 start_pos, Vector3 target_pos)
@@ -189,18 +196,18 @@ public class Astar : MonoBehaviour {
         return Vector3.Distance(node1.position, node2.position);
     }
 
-    List<Node> Reconstruct_path(Node start, Node target)
+    List<Node> Reconstruct_path(Node start_pos, Node target_pos)
     {
-            List<Node> path = new List<Node>();
-            Node current = target;
+        List<Node> path = new List<Node>();
+        Node current = target_pos;
 
-            while (current != start)
-            {
-                path.Add(current);
-                current = current.parent;
-            }
-            path.Reverse();
-            return smooth_path(path);
+        while (current != start_pos)
+        {
+           path.Add(current);
+           current = current.parent;
+        }
+        path.Reverse();
+        return smooth_path(path);
     }
 
     List<Node> smooth_path(List<Node> path)
@@ -245,6 +252,7 @@ public class Astar : MonoBehaviour {
         coins = GameObject.FindGameObjectsWithTag("Coin");
         trgts = targets.ToList();
 
+        // resets all the treasures 
         foreach (GameObject t in trgts)
         {
             t.GetComponent<Treasure>().treasure_reset();

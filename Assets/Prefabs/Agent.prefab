@@ -2309,9 +2309,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CAPACITY: 21
-  flee: 0
   agent_type: 1
-  gold_weight_till_now: 0
+  training: 1
+  flee: 0
+  gold_value: 10
+  next_treasure: {fileID: 0}
+  lootBar: {fileID: 0}
 --- !u!114 &114633133430332364
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2333,11 +2336,12 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1472398187435228}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 49403b1d43b4d374f8a11f8e1595a0ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Done: 0
   busy: 0
 --- !u!137 &137091332907136658
 SkinnedMeshRenderer:
