@@ -12,20 +12,14 @@ public class GameManager : MonoBehaviour {
     public Text endGameGoldValue;
     public int target_frame = 1;
 
-void Awake()
+void Start()
     {
-        //QualitySettings.vSyncCount = 0;
-        //Application.targetFrameRate = target_frame;
-        Time.timeScale = 10;
+		if (Player.instance.training) {
+			Time.timeScale = 10;
+		}
     }
 
     void Update () {
-
-        //if(Application.targetFrameRate != target_frame)
-        //{
-        //    Application.targetFrameRate = target_frame;
-        //}
-
         if (Timer.instance.timelimit <= 0)
         {
             if (Player.instance.training)
@@ -41,5 +35,4 @@ void Awake()
             }
         }
     }
-
 }

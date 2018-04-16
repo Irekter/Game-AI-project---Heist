@@ -42,15 +42,19 @@ public class Astar : MonoBehaviour {
     {
         float mindistance = int.MaxValue;
         target = null;
-
+		bool found = false;
         foreach (GameObject possible_trgt in trgts)
         {
             float currentDistance = Vector3.Distance(possible_trgt.transform.position, start.position);
-            if (currentDistance < mindistance)
-            {
-                target = possible_trgt.transform;
-                mindistance = currentDistance;
-            }
+			if (possible_trgt.transform.GetComponent<Treasure> ().breaking_time > 0) {
+				if (currentDistance < mindistance) {
+					target = possible_trgt.transform;
+					mindistance = currentDistance;
+				}
+			} else {
+				target = possible_trgt.transform;
+				break;
+			}
         }
         if(target!=null)
             Player.instance.set_current_treasure(target.gameObject);
@@ -83,7 +87,8 @@ public class Astar : MonoBehaviour {
 
     public void pick_up_loot()
     {
-        if (Vector3.Distance(start.position, target.position) <= 1)
+		GameObject toberemoved = Player.instance.get_current_treasure();
+		if (Player.instance.at_open_treasure_state () == 1)
         {
             // after opening check if we can take the treasure
             if (Player.instance.pick_new_loot())
@@ -94,11 +99,11 @@ public class Astar : MonoBehaviour {
             else
             {
                 // can't loot now so we keep track to loot in next iteration
-                GameObject toberemoved = Player.instance.get_current_treasure();
                 if (toberemoved.GetComponent<Treasure>().gold_weight <= Player.instance.CAPACITY)
                 {
                     // tracks treasures that were opened but not looted yet
-                    opened_treasures.Add(toberemoved);
+					toberemoved.GetComponent<Treasure>().breaking_time = 0;
+					trgts.Add(toberemoved);
                 }
             }
         }
@@ -210,41 +215,39 @@ public class Astar : MonoBehaviour {
            current = current.parent;
         }
         path.Reverse();
-        return smooth_path(path);
+		if (path.Count <= 0) {
+			return path;
+		}
+		return smooth_path (path);
     }
 
     List<Node> smooth_path(List<Node> path)
     {
-        List<Node> smooth_path = new List<Node>();
-  
-        Node start = path[0];
-        smooth_path.Add(start);
-        path.RemoveAt(0);
-        path.Reverse();
-        
-        RaycastHit info;
+        List<Node> smooth_path = new List<Node>(); 
+		Node start = path [0];
+		smooth_path.Add (start);
+		path.RemoveAt (0);
+		path.Reverse ();
+    
+		RaycastHit info;
 
-        while (path.Count > 0)
-        {
-            Node last = smooth_path[smooth_path.Count - 1];
-            Node next = path[path.Count - 1];
-          
+		while (path.Count > 0) {
+			Node last = smooth_path [smooth_path.Count - 1];
+			Node next = path [path.Count - 1];
 
-            foreach (Node node in path)
-            {
-                Ray ray = new Ray(last.position, (node.position - last.position).normalized);
-                
-                if (Physics.SphereCast(ray, 0.5f, out info, Vector3.Distance(node.position, last.position), obs))
-                    continue;
+			foreach (Node node in path) {
+				Ray ray = new Ray (last.position, (node.position - last.position).normalized);
+            
+				if (Physics.SphereCast (ray, 0.5f, out info, Vector3.Distance (node.position, last.position), obs))
+					continue;
 
-                next = node;
-                break;
-            }
+				next = node;
+				break;
+			}
 
-            smooth_path.Add(next);
-            path.RemoveRange(path.IndexOf(next), path.Count - path.IndexOf(next));
-        }
-
+			smooth_path.Add (next);
+			path.RemoveRange (path.IndexOf (next), path.Count - path.IndexOf (next));
+		}
        return smooth_path;
     }
 
