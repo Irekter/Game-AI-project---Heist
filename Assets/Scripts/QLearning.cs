@@ -70,10 +70,13 @@ public class QLearning : MonoBehaviour {
                     target = Astar.instance.targetSelector();
                     action = move_decider();
                     busy = true;
+					Tasks(action);
                 }
 
                 // executes the actions
-                Tasks(action);
+				if((action == GO_TO_TARGET) || (action == GO_TO_EXIT) || (action == FLEE)) {
+                	Tasks(action);
+				}
             }
             else
             {

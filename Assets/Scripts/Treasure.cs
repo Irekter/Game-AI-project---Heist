@@ -9,7 +9,7 @@ public class Treasure : MonoBehaviour
 	public int gold_value = 10; 
 	public int current_gold_value = 0;
     public float breaking_time = 2;
-	private float looting_time = 2;
+	public float looting_time = 2;
 	public bool alarmed = false;
 	public bool secured = false;
 	private bool decaying;
@@ -28,7 +28,9 @@ public class Treasure : MonoBehaviour
 	}
 
 	private void set_current_gold_value() {
-		current_gold_value = (int)(gold_value * (Timer.instance.timelimit / Timer.instance.resetTimer));
+		//float decrease = (Timer.instance.resetTimer - Timer.instance.timelimit) / Timer.instance.resetTimer;
+		//decrease = decrease / 200;
+		//current_gold_value = (int)((float)gold_value * (float)(1 - decrease));
 	}
 
 	private void set_looting_time()
@@ -38,21 +40,23 @@ public class Treasure : MonoBehaviour
 
     public void empty_treasure()
 	{
-		Player.instance.add_loot_time(looting_time);
+		if (looting_time > 0) {
+			Player.instance.set_loot_time (looting_time);
+		}
 		if (!Player.instance.is_learning()) {
-			current_gold_value = 0;
 			gold_value = 0;
 			gold_weight = 0;
-			looting_time = 0;
 		}
+		current_gold_value = 0;
+		looting_time = 0;
 	}
 	
 	public void open_treasure()
 	{
-		Player.instance.add_break_time(breaking_time);
-		if (!Player.instance.is_learning()) {
-			breaking_time = 0;
+		if (breaking_time > 0) {
+			Player.instance.set_break_time (breaking_time);
 		}
+		breaking_time = 0;
 	}
 
 	public Loot get_treasure_loot()

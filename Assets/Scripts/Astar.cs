@@ -107,7 +107,11 @@ public class Astar : MonoBehaviour {
     public void exchange_loot()
     {
         GameObject toberemoved = Player.instance.get_current_treasure();
-        if (toberemoved != null)
+        if (Player.instance.at_open_treasure_state () == 0) {
+			QLearning.instance.busy = false;
+			return;
+		}
+		if (toberemoved != null)
         {
             // after opening check if we can take the treasure
             if (Player.instance.exchange_loot())
