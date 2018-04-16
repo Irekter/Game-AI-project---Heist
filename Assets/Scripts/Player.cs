@@ -344,8 +344,8 @@ public class Player : MonoBehaviour {
 	}
 
 
-    // returns 0 if distance to exit is greater than distance to the target
-    // else return 1
+    // returns 1 if distance to exit is greater than distance to the target
+    // else return 0
     public int dist_to_trgt_state()
     {
         if (current_treasure != null)
@@ -424,15 +424,15 @@ public class Player : MonoBehaviour {
         return 0;
     }
 
-    // returns 1 when the gold remainging percentage is greater than 20%    //collect treasure
-    // else return 0    // goto exit
-    public int value_degradation_state()
+    // returns 1 when the risk is greater than 80%   
+    // else return 0   
+    public int risk_state()
     {
-        int gold_remaining_percent = (int)(100 * (Timer.instance.timelimit / Timer.instance.resetTimer));
-
-        if (gold_remaining_percent >= 20)
-            return 1;
-
+		int risk = (int)(100 * ((Timer.instance.resetTimer - Timer.instance.timelimit) / Timer.instance.resetTimer));
+		if (risk >= 80) 
+		{
+			return 1;
+		}
         return 0;
     }
 
@@ -470,7 +470,7 @@ public class Player : MonoBehaviour {
         if (at_exit_state() == 1)
             state += (int)Math.Pow(2, power);
         power++;
-        if (value_degradation_state() == 1)
+        if (risk_state() == 1)
             state += (int)Math.Pow(2, power);
         power++;
         if (visited_all_state() == 1)
@@ -540,7 +540,7 @@ public class Player : MonoBehaviour {
         power++;
 
 
-        if (value_degradation_state() == 1)
+        if (risk_state() == 1)
             state += (int)Math.Pow(2, power);
         power++;
         if (visited_all_state() == 1)
@@ -583,7 +583,7 @@ public class Player : MonoBehaviour {
         power++;
 
         // remains same
-        if (value_degradation_state() == 1)
+        if (risk_state() == 1)
             state += (int)Math.Pow(2, power);
         power++;
         if (visited_all_state() == 1)
@@ -616,7 +616,7 @@ public class Player : MonoBehaviour {
         if (at_exit_state() == 1)
             state += (int)Math.Pow(2, power);
         power++;
-        if (value_degradation_state() == 1)
+        if (risk_state() == 1)
             state += (int)Math.Pow(2, power);
         power++;
         if (visited_all_state() == 1)
@@ -651,7 +651,7 @@ public class Player : MonoBehaviour {
         if (at_exit_state() == 1)
             state += (int)Math.Pow(2, power);
         power++;
-        if (value_degradation_state() == 1)
+        if (risk_state() == 1)
             state += (int)Math.Pow(2, power);
         power++;
         if (visited_all_state() == 1)
@@ -686,7 +686,7 @@ public class Player : MonoBehaviour {
         if (at_exit_state() == 1)
             state += (int)Math.Pow(2, power);
         power++;
-        if (value_degradation_state() == 1)
+        if (risk_state() == 1)
             state += (int)Math.Pow(2, power);
         power++;
         if (visited_all_state() == 1)

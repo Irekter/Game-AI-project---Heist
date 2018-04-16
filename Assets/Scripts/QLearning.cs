@@ -142,6 +142,103 @@ public class QLearning : MonoBehaviour {
     }
 
 
+	// Chaitali's reward function (work in progress)
+	/*int reward_greedy_behaviour(int selected_action)
+	{
+	
+		if(Player.instance.flee_state() == 1)
+		{
+			if (selected_action == FLEE) {
+				return 5;
+			} else if (selected_action == GO_TO_EXIT) {
+				return 3;
+			} else {
+				return -5;
+			}
+		}
+
+		if(Player.instance.visited_all_state() == 1)
+		{
+			if (selected_action == FLEE) {
+				return 5;
+			} else if (selected_action == GO_TO_EXIT) {
+				return 3;
+			} else {
+				return -5;
+			}
+		}
+
+		if(Player.instance.weight_state() == 1)
+		{
+			if (selected_action == GO_TO_EXIT) {
+				return 5;
+			} else	{
+				return -1;
+			}
+		}
+
+		//at_open_treasure_state()
+
+		//at_exit_state()
+
+		if(Player.instance.dist_to_trgt_state() == 1)
+		{
+			if (selected_action == GO_TO_EXIT) {
+				return 5;
+			} else	{
+				return -1;
+			}
+		}
+
+
+		//time_state()
+
+		if (Player.instance.time_state() == 0)
+		{
+			if (selected_action == GO_TO_TARGET)
+				reward += 2;
+		}
+
+		if(Player.instance.at_open_treasure_state() == 1)
+		{
+			if (selected_action == PICK_UP_ITEM)
+				reward += 2;
+		}
+
+		if(Player.instance.at_exit_state() == 1)
+		{
+			if (selected_action == DROP_TREASURE)
+				reward += 2;
+			if (selected_action == GO_TO_TARGET)
+				reward += 1;
+		}
+
+		else
+		{
+			if (selected_action == GO_TO_EXIT)
+				reward += 1;
+			if (selected_action == FLEE)
+				reward += 2;
+		}
+
+		if(Player.instance.risk_state() == 1)
+		{
+			if (selected_action == GO_TO_TARGET)
+				reward += 2;
+		}
+		else
+		{
+			if (selected_action == SKIP_TARGET)
+				reward += 2;    
+		}
+
+
+		return 0;
+	}*/
+
+
+
+
     double rewardFunction(int selected_action)
     {
         double reward = 0; 
@@ -187,7 +284,7 @@ public class QLearning : MonoBehaviour {
                 reward += 2;
         }
 
-        if(Player.instance.value_degradation_state() == 1)
+        if(Player.instance.risk_state() == 1)
         {
             if (selected_action == GO_TO_TARGET)
                 reward += 2;
