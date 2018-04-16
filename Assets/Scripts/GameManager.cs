@@ -22,16 +22,18 @@ void Awake()
 
         if (Timer.instance.timelimit <= 0)
         {
-            //gameover.text = "GAME OVER!";
-            //Time.timeScale = 0;
-            endGameGoldValue.text = "Gold Collected : " + Player.instance.get_player_gold_value();
-            QLearning.instance.EnvReset();
+            if (Player.instance.training)
+            {
+                endGameGoldValue.text = "Gold Collected : " + Player.instance.get_player_gold_value();
+                QLearning.instance.EnvReset();
+            }
+            else
+            {
+                endGameGoldValue.text = "Gold Collected : " + Player.instance.get_player_gold_value();
+                gameover.text = "GAME OVER!";
+                Time.timeScale = 0;
+            }
         }
-
-        //if (AutoMove)
-        //    astar.SetActive(true);
-        //else
-        //    astar.SetActive(false);
     }
 
 }

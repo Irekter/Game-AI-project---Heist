@@ -69,12 +69,11 @@ MonoBehaviour:
   target: {fileID: 0}
   targets: []
   exit: {fileID: 0}
-  targetradius: 1
+  trgts: []
   coins: []
   obs:
     serializedVersion: 2
     m_Bits: 512
-  AutoMove: 1
 --- !u!114 &114377887821564594
 MonoBehaviour:
   m_ObjectHideFlags: 1

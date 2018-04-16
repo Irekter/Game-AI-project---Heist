@@ -22,12 +22,6 @@ public class move : MonoBehaviour {
         instance = this;
     }
 
-    void Update()
-    {
-        if (Astar.instance.AutoMove)
-            autoMove(grid.final_path);
-    }
-
     public void autoMove(List<Node> mover)
     {
         if (mover.Count >= 2)

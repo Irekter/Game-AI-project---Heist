@@ -47,6 +47,8 @@ public class QLearning : MonoBehaviour {
     void Start() {
         action = 0;
         start_pos = gameObject.transform.position;
+        if(!Player.instance.training)
+            readModel();
     }
 
     Random rd = new Random();
@@ -54,7 +56,7 @@ public class QLearning : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        if (Done)
+        if (Done && Player.instance.training)
         {
             EnvReset();
         }
@@ -62,18 +64,43 @@ public class QLearning : MonoBehaviour {
         if (Player.instance.visited_all_state() == 1)
             Player.instance.flee = true;
 
-        // selects action using q-learning
-        if (!busy)
+        if (Player.instance.agent_type == 1)
         {
-            target = Astar.instance.targetSelector();
-            action = move_decider();
-            busy = true;
-        }
+            if (Player.instance.training)
+            {
+                // selects action using q-learning
+                if (!busy)
+                {
+                    target = Astar.instance.targetSelector();
+                    action = move_decider();
+                    busy = true;
+                }
 
-        // executes the actions
-        Tasks(action);
+                // executes the actions
+                Tasks(action);
+            }
+            else
+            {
+                target = Astar.instance.targetSelector();
+                // selects action based on the model
+                action = useModel();
+
+                //executes the selected action
+                Tasks(action);
+            }
+        }
+        else if(Player.instance.agent_type == 2)
+        {
+            Astar.instance.Simple_Move();
+        }
     }
 
+
+    int useModel()
+    {
+        int currentstate = Player.instance.get_state();
+        return getAction(currentstate);
+    }
 
     int move_decider()
     {
@@ -299,4 +326,33 @@ public class QLearning : MonoBehaviour {
         File.WriteAllText(path,strb.ToString());
     }
 
+    void readModel()
+    {
+        using (StreamReader str = new StreamReader(path))
+        {
+            for (int i = 0; i < STATES;i++)
+            {
+                for (int j = 0; j < POSSIBLE_MOVES;j++)
+                {
+                    if (str.Peek() >= 0)
+                    {
+                        Q[i, j] = double.Parse(str.ReadLine());
+                    }
+                    else
+                        return;
+                }
+            }
+        }
+    }
+
+    void printModel()
+    {
+        for (int i = 0; i < STATES;i++)
+        {
+            for (int j = 0; j < POSSIBLE_MOVES;j++)
+            {
+                Debug.Log(Q[i,j]);
+            }
+        }
+    }
 }

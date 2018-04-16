@@ -53,3 +53,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   astar: {fileID: 0}
   gameover: {fileID: 0}
+  endGameGoldValue: {fileID: 0}

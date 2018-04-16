@@ -18,7 +18,6 @@ public class Astar : MonoBehaviour {
     List<GameObject> opened_treasures;
     public GameObject[] coins;
     public LayerMask obs;
-    public bool AutoMove;
     public List<Node> intpath;
 
 	void Start() 
@@ -257,5 +256,12 @@ public class Astar : MonoBehaviour {
         {
             t.GetComponent<Treasure>().treasure_reset();
         }
+    }
+
+    public void Simple_Move()
+    {
+        target = targetSelector();
+        grid.final_path = pathfinder(start.position, target.position);
+        move.instance.autoMove(grid.final_path);
     }
 }

@@ -11,7 +11,7 @@ public class Player : MonoBehaviour {
 	public int CAPACITY = 21;
 	public int agent_type = 1;
 
-	public bool training = true;
+	public bool training;
 	public bool flee;
 
 	public int gold_value = 10;
@@ -33,22 +33,22 @@ public class Player : MonoBehaviour {
 	private List<Loot> player_loot;
     public Image lootBar;
 
-    private void Awake()
+    void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
 		anim = GetComponent<Animator> ();
+        instance = this;
     }
 		
     void Start() 
 	{
-		instance = this;
         exit_target = GameObject.FindGameObjectWithTag("Exit").transform.position;
         this.player_loot = new List<Loot>();
         last_loot = new Loot();
         player_reset();
     }
 
-    private void Update()
+    void Update()
     {
 		update_time_to_exit();
 		update_flee_flag();
@@ -74,10 +74,10 @@ public class Player : MonoBehaviour {
 		last_loot = null;
 
 		agent.velocity = Vector3.zero;
-		agent.transform.Rotate(new Vector3(0,-190,0));
+		agent.transform.Rotate(new Vector3(0,0,0));
 	}
 
-	private void update_time_to_exit()
+	void update_time_to_exit()
 	{
 		float speed = agent.speed;
 		if(speed > 0) 
@@ -91,7 +91,7 @@ public class Player : MonoBehaviour {
 		}
 	}
 
-	private void update_flee_flag() 
+	void update_flee_flag() 
 	{
 		if (time_to_exit >= Timer.instance.timelimit) 
 		{
@@ -103,7 +103,7 @@ public class Player : MonoBehaviour {
 		}
 	}
 
-	private void update_player_motion() 
+	void update_player_motion() 
 	{
 		if (break_time > 0) {
             if(break_time <= Time.fixedDeltaTime)
@@ -241,7 +241,7 @@ public class Player : MonoBehaviour {
 		current_treasure = treasure;
 	}
 
-	private void destroyCoin()
+	void destroyCoin()
 	{
             GameObject coin = current_treasure.transform.GetChild (0).gameObject;
             Destroy (coin);
@@ -693,7 +693,8 @@ public class Player : MonoBehaviour {
     // looting circle
     public void LootUI()
     {
-        lootBar.fillAmount = get_looting_time() / 10;
+        float numerator = (current_treasure.GetComponent<Treasure>().breaking_time - break_time);
+        lootBar.fillAmount = numerator / current_treasure.GetComponent<Treasure>().breaking_time;
     }
 }
 
