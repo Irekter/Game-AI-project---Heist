@@ -15,8 +15,8 @@ public class Player : MonoBehaviour {
 	public bool flee;
 
 	public int gold_value = 10;
-	private int gold_weight = 10;
-	private int gold_weight_at_exit;
+	int gold_weight = 10;
+	int gold_weight_at_exit;
 
 	private float time_to_exit;
 	private float loot_time;
@@ -106,7 +106,7 @@ public class Player : MonoBehaviour {
 	void update_player_motion() 
 	{
 		if (break_time > 0) {
-            if(break_time <= Time.fixedDeltaTime)
+            if(break_time <= Time.deltaTime)
             {
                 QLearning.instance.busy = false;
                 resume_player_motion();
@@ -115,12 +115,12 @@ public class Player : MonoBehaviour {
             {
                 stop_player_motion();
             }
-            break_time -= Time.fixedDeltaTime;
+            break_time -= Time.deltaTime;
 		}
 
 		else if (loot_time > 0) 
 		{
-            if (loot_time <= Time.fixedDeltaTime)
+            if (loot_time <= Time.deltaTime)
             {
                 resume_player_motion();
                 if (current_loot != null)
@@ -135,7 +135,7 @@ public class Player : MonoBehaviour {
             {
                 stop_player_motion();
             }
-            loot_time -= Time.fixedDeltaTime;
+            loot_time -= Time.deltaTime;
         }
 
 	}
@@ -693,8 +693,11 @@ public class Player : MonoBehaviour {
     // looting circle
     public void LootUI()
     {
-        float numerator = (current_treasure.GetComponent<Treasure>().breaking_time - break_time);
-        lootBar.fillAmount = numerator / current_treasure.GetComponent<Treasure>().breaking_time;
+        if (current_treasure != null)
+        {
+            float numerator = (current_treasure.GetComponent<Treasure>().breaking_time - break_time);
+            lootBar.fillAmount = numerator / current_treasure.GetComponent<Treasure>().breaking_time;
+        }
     }
 }
 

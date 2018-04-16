@@ -12,14 +12,6 @@ public class QLearning : MonoBehaviour {
     NavMeshAgent agent;
     int action;
     double[,] Q = new double[STATES,POSSIBLE_MOVES];
-    double[,] R = { {2,-1, 1}
-                   ,{2, -1, 1}
-                   ,{2,-1, 1}
-                   ,{2,-1, 1}
-                   ,{2,0, 1}
-                   ,{-1,2, 1}};
-
-
     public static QLearning instance;
     public bool Done;
 
@@ -31,10 +23,13 @@ public class QLearning : MonoBehaviour {
     public const int SKIP_TARGET = 4;
     public const int FLEE = 5;
 
+    int runcount;
     const int POSSIBLE_MOVES = 6;
     const int STATES = 512;
-    const string path = "./model.txt";
+    const string model_path = "./model.txt";
+    const string train_info = "./training_info.txt";
     Vector3 start_pos;
+    double reward = 0;
 
     void Awake()
     {
@@ -46,12 +41,13 @@ public class QLearning : MonoBehaviour {
     // Use this for initialization
     void Start() {
         action = 0;
+        runcount = 0;
         start_pos = gameObject.transform.position;
+        File.WriteAllText(train_info, string.Empty);
         if(!Player.instance.training)
             readModel();
     }
 
-    Random rd = new Random();
     public bool busy;
 
     // Update is called once per frame
@@ -116,9 +112,7 @@ public class QLearning : MonoBehaviour {
 
     int QLearner()
     {
-        
         int rnd = Random.Range(0,2);
-     
         int currentstate = Player.instance.get_state();
 
         // random action according to epsilon-greedy 
@@ -130,7 +124,7 @@ public class QLearning : MonoBehaviour {
 
         int nextstate = Player.instance.get_next_state(action);
 
-        double reward = rewardFunction(action);
+        reward = rewardFunction(action);
 
         double currentQ = Q[currentstate, action];
         double maxQ = getMaxQ(nextstate);
@@ -247,6 +241,7 @@ public class QLearning : MonoBehaviour {
     public void EnvReset()
     {
         createModel(Q);
+        record_observations();
         transform.position = start_pos;
         busy = false;
         Done = false;
@@ -323,12 +318,12 @@ public class QLearning : MonoBehaviour {
             }
         }
 
-        File.WriteAllText(path,strb.ToString());
+        File.WriteAllText(model_path,strb.ToString());
     }
 
     void readModel()
     {
-        using (StreamReader str = new StreamReader(path))
+        using (StreamReader str = new StreamReader(model_path))
         {
             for (int i = 0; i < STATES;i++)
             {
@@ -354,5 +349,14 @@ public class QLearning : MonoBehaviour {
                 Debug.Log(Q[i,j]);
             }
         }
+    }
+
+    void record_observations()
+    {
+        StringBuilder strb = new StringBuilder();
+
+        strb.AppendLine("Trail number: "+runcount+" , Gold collected: "+Player.instance.gold_value+" ,Reward: "+reward);
+        File.AppendAllText(train_info, strb.ToString());
+        runcount++;
     }
 }

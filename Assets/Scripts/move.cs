@@ -6,14 +6,12 @@ using UnityEngine.AI;
 public class move : MonoBehaviour {
 
     public Transform player;
-    Grid grid;
     private NavMeshAgent agent;
     Astar astar;
     public static move instance;
 
     private void Awake()
     {
-        grid = GetComponent<Grid>();
 	    agent = player.GetComponent<NavMeshAgent>();
     }
 

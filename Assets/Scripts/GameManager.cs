@@ -10,15 +10,21 @@ public class GameManager : MonoBehaviour {
     public GameObject astar;
     public Text gameover;
     public Text endGameGoldValue;
+    public int target_frame = 1;
 
 void Awake()
     {
-        //Time.timeScale = 2;
+        //QualitySettings.vSyncCount = 0;
+        //Application.targetFrameRate = target_frame;
+        Time.timeScale = 10;
     }
 
     void Update () {
-		if(Input.GetKey(KeyCode.Escape))
-            SceneManager.LoadScene("Menu");
+
+        //if(Application.targetFrameRate != target_frame)
+        //{
+        //    Application.targetFrameRate = target_frame;
+        //}
 
         if (Timer.instance.timelimit <= 0)
         {

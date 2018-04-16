@@ -1883,6 +1883,11 @@ Prefab:
       propertyPath: endGameGoldValue
       value: 
       objectReference: {fileID: 1597237418}
+    - target: {fileID: 114627887575651280, guid: 822c8750f7eb6064f8c09c4907d50e65,
+        type: 2}
+      propertyPath: target_frame
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 822c8750f7eb6064f8c09c4907d50e65, type: 2}
   m_IsPrefabParent: 0
