@@ -86,6 +86,7 @@ public class Astar : MonoBehaviour {
             {
                 // performs looting
                 target.GetComponent<Treasure>().empty_treasure();
+                target.GetComponent<Treasure>().GetComponent<ShowLootVal>().Show_Gold_Value();
             }
             else
             {
@@ -118,6 +119,7 @@ public class Astar : MonoBehaviour {
             {
                 // performs looting
                 toberemoved.GetComponent<Treasure>().empty_treasure();
+                toberemoved.GetComponent<Treasure>().GetComponent<ShowLootVal>().Show_Gold_Value();
             }
             else
             {
