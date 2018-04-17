@@ -15,7 +15,6 @@ public class Astar : MonoBehaviour {
     public GameObject[] targets;
     public GameObject exit;
     public List<GameObject> trgts;
-    List<GameObject> opened_treasures;
     public GameObject[] coins;
     public LayerMask obs;
     public List<Node> intpath;
@@ -24,7 +23,6 @@ public class Astar : MonoBehaviour {
 	{
         reset();
 		instance = this;
-        opened_treasures = new List<GameObject>();
 	}
 
 	private void Awake()
@@ -45,7 +43,7 @@ public class Astar : MonoBehaviour {
         foreach (GameObject possible_trgt in trgts)
         {
 			float currentDistance = Vector3.Distance(possible_trgt.transform.position, start.position);
-			if(possible_trgt.GetComponent<Treasure>().breaking_time > 0.1) {
+			if(possible_trgt.GetComponent<Treasure>().breaking_time > 0) {
 				if (currentDistance < mindistance) {
 					target = possible_trgt.transform;
 					mindistance = currentDistance;
@@ -80,17 +78,6 @@ public class Astar : MonoBehaviour {
         }
     }
 
-	public void pick_up_loot_adder()
-	{
-		foreach (GameObject possible_trgt in opened_treasures)
-		{
-			trgts.Add (possible_trgt);
-		}
-        if(trgts.Count() > 0) {
-            Player.instance.flee = false;
-        }
-	}
-
     public void pick_up_loot()
     {
 		GameObject toberemoved = Player.instance.get_current_treasure();
@@ -109,11 +96,6 @@ public class Astar : MonoBehaviour {
         }
         else
         {
-			if (toberemoved.GetComponent<Treasure>().gold_weight <= Player.instance.CAPACITY)
-			{
-                toberemoved.GetComponent<Treasure>().breaking_time = 0.1f;
-				opened_treasures.Add(toberemoved);
-			}
 			Player.instance.set_current_treasure(null);
 			QLearning.instance.busy = false;
         } 
@@ -142,12 +124,6 @@ public class Astar : MonoBehaviour {
             else
             {
                 Player.instance.remove_current_treasure();
-                // can't loot now so we keep track to loot in next iteration
-                if (toberemoved.GetComponent<Treasure>().gold_weight <= Player.instance.CAPACITY)
-                {
-                    // tracks treasures that were opened but not looted yet
-                    opened_treasures.Add(toberemoved);
-                }
                 QLearning.instance.busy = false;
             }
         }
@@ -284,10 +260,5 @@ public class Astar : MonoBehaviour {
         }
     }
 
-    public void Simple_Move()
-    {
-        target = targetSelector();
-        grid.final_path = pathfinder(start.position, target.position);
-        move.instance.autoMove(grid.final_path);
-    }
+    
 }

@@ -12,7 +12,8 @@ public class Player : MonoBehaviour {
 	public int agent_type = 1;
 
 	public bool training = true;
-	public bool flee;
+	public bool flee = false;
+	public bool detected = false;
 
 	public int gold_value = 10;
 	private int gold_weight = 10;
@@ -28,9 +29,10 @@ public class Player : MonoBehaviour {
 	private GameObject current_treasure;
 
 	private Loot current_loot;
-    public GameObject next_treasure;
 	private List<Loot> player_loot;
     public Image lootBar;
+
+
 
     void Awake()
     {
@@ -57,6 +59,7 @@ public class Player : MonoBehaviour {
 	public void player_reset()
 	{
 		flee = false;
+		detected = false;
 		gold_weight = 0;
 		gold_value = 0;
 		gold_weight_at_exit = 0;
@@ -192,12 +195,9 @@ public class Player : MonoBehaviour {
 			gold_weight_at_exit += gold_weight;
 			gold_weight = 0;
 			player_loot.Clear ();
-			Astar.instance.pick_up_loot_adder();
-			QLearning.instance.busy = false;
-		} else {
-			QLearning.instance.busy = false;
 		}
-    }
+		QLearning.instance.busy = false;
+   }
 		
 	public bool is_accepting_loot(int loot_weight)
 	{
@@ -399,11 +399,20 @@ public class Player : MonoBehaviour {
     // else return 0
     public int detection_state()
     {
-        if(next_treasure != null && next_treasure.GetComponent<Treasure>().secured){
+		if(detected){
             return 1;
         }
         return 0;
     }
+
+	public void set_detected()
+	{
+		if ((current_loot != null) && (current_treasure.GetComponent<Treasure> ().secured)) {
+			detected = true;
+		} else {
+			detected = false;
+		}
+	}
 
 
     // returns 1 when near the current treasure
