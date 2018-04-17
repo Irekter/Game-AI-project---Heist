@@ -75,6 +75,7 @@ public class Player : MonoBehaviour {
 
 		agent.velocity = Vector3.zero;
 		agent.transform.Rotate(new Vector3(0,0,0));
+        resume_player_motion();
 	}
 
 	private void update_time_to_exit()
@@ -104,7 +105,7 @@ public class Player : MonoBehaviour {
 		if (break_time > 0) {
             if(break_time <= Time.deltaTime)
             {
-                Debug.Log("update motion error");
+ 
                 QLearning.instance.busy = false;
                 resume_player_motion();
             }
@@ -243,7 +244,6 @@ public class Player : MonoBehaviour {
 		}
 		current_treasure = null;
 		current_loot = null;
-        Debug.Log("Destroy coin");
         QLearning.instance.busy = false;
     }
 
@@ -268,7 +268,6 @@ public class Player : MonoBehaviour {
 				}
 			}
 		}
-        Debug.Log("pick_new_loot currenttreasure is null");
 		QLearning.instance.busy = false;
 		return false;
 	}
@@ -342,6 +341,14 @@ public class Player : MonoBehaviour {
         return 0;
 	}
 
+    //public int weight_state()
+    //{
+    //    if (percent_full() >= 65)
+    //    {
+    //        return 1;
+    //    }
+    //    return 0;
+    //}
 
     // returns 1 if distance to exit is greater than distance to the target
     // else return 0
@@ -395,6 +402,7 @@ public class Player : MonoBehaviour {
     public int detection_state()
     {
         if(current_treasure != null && current_treasure.GetComponent<Treasure>().secured){
+            Debug.Log("treasure secured");
             return 1;
         }
         return 0;
@@ -440,7 +448,7 @@ public class Player : MonoBehaviour {
 
     public int visited_all_state()
     {
-        if (Astar.instance.trgts.Count == 0)
+        if (Astar.instance.trgts.Count == 0 && current_treasure==null)
             return 1;
         return 0;
     }

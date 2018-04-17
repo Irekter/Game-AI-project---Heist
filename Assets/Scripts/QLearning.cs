@@ -26,10 +26,25 @@ public class QLearning : MonoBehaviour {
     int runcount;
     const int POSSIBLE_MOVES = 6;
     const int STATES = 512;
-    const string model_path = "./model.txt";
-    const string train_info = "./training_info.txt";
+
+    const string evolved_model_path = "./models/evolved_model.txt";
+    const string evolved_train_info = "./training_info/evolved_training_info.txt";
+
+    const string sarsa_model_path = "./models/sarsa_model.txt";
+    const string sarsa_train_info = "./training_info/sarsa_training_info.txt";
+
+    const string remembering_model_path = "./models/remembering_model.txt";
+    const string remembering_train_info = "./training_info/remembering_training_info.txt";
+
+    const int SARSA_AGENT = 4;
+    const int REMEMBERING_AGENT = 3;
+    const int EVOLVED_AGENT = 2;
+    const int TACTICAL_AGENT = 1;
+
     Vector3 start_pos;
     double reward = 0;
+
+    Random rng = new Random();
 
     void Awake()
     {
@@ -43,7 +58,7 @@ public class QLearning : MonoBehaviour {
         action = 0;
         runcount = 0;
         start_pos = gameObject.transform.position;
-        File.WriteAllText(train_info, string.Empty);
+        makeEmpty();
         if(!Player.instance.training)
             readModel();
     }
@@ -57,10 +72,7 @@ public class QLearning : MonoBehaviour {
             EnvReset();
         }
 
-        if (Player.instance.visited_all_state() == 1)
-            Player.instance.flee = true;
-
-        if (Player.instance.agent_type == 1)
+        if (Player.instance.agent_type == EVOLVED_AGENT || Player.instance.agent_type == REMEMBERING_AGENT)
         {
             if (Player.instance.training)
             {
@@ -70,27 +82,75 @@ public class QLearning : MonoBehaviour {
                     target = Astar.instance.targetSelector();
                     action = move_decider();
                     busy = true;
-					Tasks(action);
+                    Tasks(action);
                 }
 
                 // executes the actions
-				if((action == GO_TO_TARGET) || (action == GO_TO_EXIT) || (action == FLEE)) {
-                	Tasks(action);
-				}
+                if ((action == GO_TO_TARGET) || (action == GO_TO_EXIT) || (action == FLEE))
+                {
+                    Tasks(action);
+                }
             }
             else
             {
-                target = Astar.instance.targetSelector();
-                // selects action based on the model
-                action = useModel();
-
-                //executes the selected action
-                Tasks(action);
+                if (!busy)
+                {
+                    target = Astar.instance.targetSelector();
+                    // selects action based on the model
+                    action = useModel();
+                    Debug.Log("action" + action);
+                    busy = true;
+                    //executes the selected action
+                    Tasks(action);
+                }
+                // executes the actions
+                if ((action == GO_TO_TARGET) || (action == GO_TO_EXIT) || (action == FLEE))
+                {
+                    Tasks(action);
+                }
             }
         }
-        else if(Player.instance.agent_type == 2)
+        else if(Player.instance.agent_type == TACTICAL_AGENT)
         {
             Astar.instance.Simple_Move();
+        }
+        else if(Player.instance.agent_type == SARSA_AGENT)
+        {
+            if (Player.instance.training)
+            {
+                // selects action using q-learning
+                if (!busy)
+                {
+                    target = Astar.instance.targetSelector();
+                    action = sarsa_move_decider();
+                    busy = true;
+                    Tasks(action);
+                }
+
+                // executes the actions
+                if ((action == GO_TO_TARGET) || (action == GO_TO_EXIT) || (action == FLEE))
+                {
+                    Tasks(action);
+                }
+            }
+            else
+            {
+                if (!busy)
+                {
+                    target = Astar.instance.targetSelector();
+                    // selects action based on the model
+                    action = useModel();
+                    Debug.Log("action" + action);
+                    busy = true;
+                    //executes the selected action
+                    Tasks(action);
+                }
+                // executes the actions
+                if ((action == GO_TO_TARGET) || (action == GO_TO_EXIT) || (action == FLEE))
+                {
+                    Tasks(action);
+                }
+            }
         }
     }
 
@@ -107,6 +167,11 @@ public class QLearning : MonoBehaviour {
         return action;
     }
 
+    int sarsa_move_decider()
+    {
+        action = SarsaLearner();
+        return action;
+    }
 
     // HYPERPARAMETERS:
     double gamma = 0.3;
@@ -115,20 +180,20 @@ public class QLearning : MonoBehaviour {
 
     int QLearner()
     {
-        int rnd = Random.Range(0,2);
+        float rnd = (float)(Random.Range(0, 101)) / 100;
         int currentstate = Player.instance.get_state();
 
         // random action according to epsilon-greedy 
-        //if (rnd < epsilon)
-        //    action = Random.Range(0, POSSIBLE_MOVES);
-        //else
-            //
-        action = getAction(currentstate);
-        Debug.Log("action: " + action);
+        if (rnd < epsilon)
+            action = Random.Range(0, POSSIBLE_MOVES);
+        else
+            action = getAction(currentstate);
+         
+        Debug.Log("Q-learning action: " + action);
 
         int nextstate = Player.instance.get_next_state(action);
 
-        reward = rewardFunction(action);
+        reward = Evolved_rewardFunction(action);
 
         double currentQ = Q[currentstate, action];
         double maxQ = getMaxQ(nextstate);
@@ -143,18 +208,41 @@ public class QLearning : MonoBehaviour {
     }
 
 
-    double rewardFunction(int selected_action)
+    double Evolved_rewardFunction(int selected_action)
     {
+        if(Player.instance.flee_state() == 1)
+        {
+            if (selected_action == FLEE)
+                return 5;
+            return -5;
+        }
         if (Player.instance.at_open_treasure_state() == 1)
         {
             if (selected_action == PICK_UP_ITEM)
-                return 100;
-            else
-                return -1;
+                return 5;
+            return -1;
+        }
+        if (Player.instance.at_exit_state() == 1)
+        {
+            if (selected_action == DROP_TREASURE)
+                return 5;
+            return -1;
+        }
+        if(Player.instance.weight_state() == 1)
+        {
+            if (selected_action == GO_TO_EXIT)
+                return 5;
+            return -5;
+        }
+        if(Player.instance.time_state() == 0)
+        {
+            if (selected_action == GO_TO_TARGET)
+                return 2;
         }
 
-        return reward;
+        return 0;
     }
+
 
     int getAction(int currentstate)
     {
@@ -200,6 +288,7 @@ public class QLearning : MonoBehaviour {
         Player.instance.player_reset();
         Timer.instance.timer_reset();
         Astar.instance.reset();
+        //Turret.instance.TurretReset();
     }
 
     void Tasks(int selected_action)
@@ -215,7 +304,6 @@ public class QLearning : MonoBehaviour {
             }
             else
             {
-                Debug.Log("tasks error");
                 Player.instance.flee = true;
                 busy = false;
             }
@@ -230,7 +318,6 @@ public class QLearning : MonoBehaviour {
 
             if (Vector3.Distance(agent.transform.position, target.position) <= 1)
             {
-                Debug.Log("Near exit");
                 busy = false; 
             }
         }
@@ -280,12 +367,14 @@ public class QLearning : MonoBehaviour {
             }
         }
 
-        File.WriteAllText(model_path,strb.ToString());
+        string path = selectModelPath();
+        File.WriteAllText(path,strb.ToString());
     }
 
     void readModel()
     {
-        using (StreamReader str = new StreamReader(model_path))
+        string path = selectModelPath();
+        using (StreamReader str = new StreamReader(path))
         {
             for (int i = 0; i < STATES;i++)
             {
@@ -316,9 +405,126 @@ public class QLearning : MonoBehaviour {
     void record_observations()
     {
         StringBuilder strb = new StringBuilder();
-
+        string training_path = selectTrainingPath();
         strb.AppendLine("Trail number: "+runcount+" , Gold collected: "+Player.instance.gold_value+" ,Reward: "+reward);
-        File.AppendAllText(train_info, strb.ToString());
+        File.AppendAllText(training_path, strb.ToString());
         runcount++;
+    }
+
+
+    //Learning function for sarsa
+    int SarsaLearner()
+    {
+        int rnd = Random.Range(0, 2);
+        int currentstate = Player.instance.get_state();
+
+        // random action according to epsilon-greedy 
+        //if (rnd < epsilon)
+        //    action = Random.Range(0, POSSIBLE_MOVES);
+        //else
+        //
+        action = getAction(currentstate);
+        Debug.Log("Sarsa Learning action: " + action);
+
+        int nextstate = Player.instance.get_next_state(action);
+
+        reward = sarsaRewardFunction(action);
+
+        double currentQ = Q[currentstate, action];
+        double maxQ = getMaxQ(nextstate);
+
+        double q = (1 - alpha) * currentQ + alpha * (reward + (gamma * maxQ) - currentQ);
+
+        Q[currentstate, action] = q;
+
+        // epsilon decaying
+        epsilon = 0.9 * epsilon;
+        return action;
+    }
+
+
+    // SARSA
+    double sarsaRewardFunction(int selected_action)
+    {
+        if (Player.instance.weight_state() == 1)
+        {
+            if (selected_action == GO_TO_EXIT)
+                return 10;
+        }
+        else
+        {
+            if (selected_action == GO_TO_TARGET)
+                return 2;
+        }
+
+        if (Player.instance.at_open_treasure_state() == 1)
+        {
+            if (selected_action == PICK_UP_ITEM)
+                return 5;
+        }
+
+        if (Player.instance.detection_state() == 1)
+        {
+            if (selected_action == SKIP_TARGET)
+                return 20;
+            return -20;
+        }
+
+        if (Player.instance.at_exit_state() == 1)
+        {
+            if (selected_action == DROP_TREASURE)
+                return 8;
+        }
+
+        if (Player.instance.time_state() == 1)
+        {
+            if (selected_action == FLEE)
+                return 10;
+           
+        }
+
+        if (Player.instance.risk_state() == 1)
+        {
+            if (selected_action == FLEE)
+                return 10;
+        }
+
+        if (Player.instance.visited_all_state() == 1)
+        {
+            if (selected_action == FLEE)
+                return 20;
+        }
+
+        return 0;
+    }
+
+    void makeEmpty()
+    {
+        string training_info = selectTrainingPath();
+        File.WriteAllText(training_info, string.Empty);
+    }
+
+    string selectModelPath()
+    {
+        string path = evolved_model_path;
+
+        if (Player.instance.agent_type == SARSA_AGENT)
+            path = sarsa_model_path;
+        else if (Player.instance.agent_type == REMEMBERING_AGENT)
+            path = remembering_model_path;
+
+        return path;
+    }
+
+    string selectTrainingPath()
+    {
+        string training_path = evolved_train_info;
+
+        if (Player.instance.agent_type == SARSA_AGENT)
+            training_path = sarsa_train_info;
+        else if (Player.instance.agent_type == REMEMBERING_AGENT)
+            training_path = remembering_train_info;
+
+        return training_path;
     }
 }

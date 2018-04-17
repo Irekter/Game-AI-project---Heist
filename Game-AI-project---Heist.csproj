@@ -267,6 +267,7 @@
     <Compile Include="Assets\Scripts\PQ.cs" />
     <Compile Include="Assets\Scripts\Q.cs" />
     <Compile Include="Assets\Scripts\QLearning.cs" />
+    <Compile Include="Assets\Scripts\Sarsa.cs" />
     <Compile Include="Assets\Scripts\Timer.cs" />
     <Compile Include="Assets\Scripts\Treasure.cs" />
     <Compile Include="Assets\Scripts\Turret.cs" />

@@ -7,14 +7,14 @@ public class Turret : MonoBehaviour
 
     public Transform target;
     public Transform rotate;
-
+    public static Turret instance; 
     [Header("Attributtes")]
 
 
     public float range = 15f;
     public float turnSpeed = 5f;
     public float fireRate = 2f;
-    public float fireCtdwn = 0f;
+    public float fireCtdwn = 1f;
 
     public GameObject bulletPrefab;
     public GameObject alert;
@@ -23,10 +23,14 @@ public class Turret : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        instance = this;
         InvokeRepeating("UpdateTarget", 0f, 0.5f);
     }
 
-
+    public void TurretReset()
+    {
+        fireCtdwn = 1;
+    }
 
     //Search objects mareked as  "". Mark closests, check in range and set target = that object 
     //Not done every frame because highly computational
@@ -77,13 +81,12 @@ public class Turret : MonoBehaviour
 
         alert.SetActive(true);
 
-        if(fireCtdwn<=0)
+        if(fireCtdwn>0)
         {
             Shoot();
-            fireCtdwn = 1 / fireRate;
         }
 
-        fireCtdwn -= Time.deltaTime;
+        fireCtdwn--;
 
     }
 

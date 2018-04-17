@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour {
 void Start()
     {
 		if (Player.instance.training) {
-			Time.timeScale = 2;
+			Time.timeScale = 10;
 		}
     }
 
@@ -24,6 +24,7 @@ void Start()
         {
             if (Player.instance.training)
             {
+                QLearning.instance.Done = true;
                 endGameGoldValue.text = "Gold Collected : " + Player.instance.get_player_gold_value();
                 QLearning.instance.EnvReset();
             }

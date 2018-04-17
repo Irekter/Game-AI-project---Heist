@@ -1,3 +1,0 @@
-Trail number: 0 , Gold collected: 30 ,Reward: -1
-Trail number: 1 , Gold collected: 35 ,Reward: -1
-Trail number: 2 , Gold collected: 50 ,Reward: 100
