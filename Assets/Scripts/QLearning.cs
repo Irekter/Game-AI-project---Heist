@@ -133,7 +133,26 @@ public class QLearning : MonoBehaviour {
         }
         else if(Player.instance.agent_type == TACTICAL_AGENT)
         {
-            Astar.instance.Simple_Move();
+			if (!busy)
+			{
+				target = Astar.instance.targetSelector();
+				if ((target != null) && target.gameObject.GetComponent<Treasure> ().secured) {
+					Player.instance.detected = true;
+				} else {
+					Player.instance.detected = false;
+				}
+				// selects action based on the model
+				action = tactical_moves();
+				Debug.Log("action" + action);
+				busy = true;
+				//executes the selected action
+				Tasks(action);
+			}
+			// executes the actions
+			if ((action == GO_TO_TARGET) || (action == GO_TO_EXIT) || (action == FLEE))
+			{
+				Tasks(action);
+			}
         }
         else if(Player.instance.agent_type == SARSA_AGENT)
         {
@@ -601,4 +620,26 @@ public class QLearning : MonoBehaviour {
 
         return training_path;
     }
+
+	int tactical_moves() {
+		if (Player.instance.flee_state () == 1) {
+			return FLEE;
+		}
+		if (Player.instance.visited_all_state () == 1) {
+			return FLEE;
+		}
+		if (Player.instance.at_exit_state () == 1) {
+			return DROP_TREASURE;
+		}
+		if (Player.instance.weight_state() == 1) {
+			return GO_TO_EXIT;
+		}
+		if (Player.instance.at_open_treasure_state() == 1) {
+			return PICK_UP_ITEM;
+		}
+		if (Player.instance.detection_state () == 1) {
+			return SKIP_TARGET;
+		}
+		return GO_TO_TARGET;
+	}
 }

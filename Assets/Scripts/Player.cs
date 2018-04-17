@@ -32,6 +32,8 @@ public class Player : MonoBehaviour {
 	private List<Loot> player_loot;
     public Image lootBar;
 
+	public bool detected = false;
+
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -57,6 +59,7 @@ public class Player : MonoBehaviour {
 	public void player_reset()
 	{
 		flee = false;
+		detected = false;
 		gold_weight = 0;
 		gold_value = 0;
 		gold_weight_at_exit = 0;
@@ -399,11 +402,20 @@ public class Player : MonoBehaviour {
     // else return 0
     public int detection_state()
     {
-        if(next_treasure != null && next_treasure.GetComponent<Treasure>().secured){
+		if(detected){
             return 1;
         }
         return 0;
     }
+
+	public void set_detected()
+	{
+		if ((current_loot != null) && (current_treasure.GetComponent<Treasure> ().secured)) {
+			detected = true;
+		} else {
+			detected = false;
+		}
+	}
 
 
     // returns 1 when near the current treasure

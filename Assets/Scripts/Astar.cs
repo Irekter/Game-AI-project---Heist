@@ -284,10 +284,5 @@ public class Astar : MonoBehaviour {
         }
     }
 
-    public void Simple_Move()
-    {
-        target = targetSelector();
-        grid.final_path = pathfinder(start.position, target.position);
-        move.instance.autoMove(grid.final_path);
-    }
+    
 }
