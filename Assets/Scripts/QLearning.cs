@@ -101,6 +101,11 @@ public class QLearning : MonoBehaviour {
                 if (!busy)
                 {
                     target = Astar.instance.targetSelector();
+					if ((target != null) && target.gameObject.GetComponent<Treasure> ().secured) {
+						Player.instance.detected = true;
+					} else {
+						Player.instance.detected = false;
+					}
                     action = move_decider();
                     busy = true;
                     Tasks(action);
@@ -117,6 +122,11 @@ public class QLearning : MonoBehaviour {
                 if (!busy)
                 {
                     target = Astar.instance.targetSelector();
+					if ((target != null) && target.gameObject.GetComponent<Treasure> ().secured) {
+						Player.instance.detected = true;
+					} else {
+						Player.instance.detected = false;
+					}
                     // selects action based on the model
                     action = useModel();
                     Debug.Log("action" + action);
@@ -162,7 +172,12 @@ public class QLearning : MonoBehaviour {
                 if (!busy)
                 {
                     target = Astar.instance.targetSelector();
-                    action = sarsa_move_decider();
+					if ((target != null) && target.gameObject.GetComponent<Treasure> ().secured) {
+						Player.instance.detected = true;
+					} else {
+						Player.instance.detected = false;
+					}
+					action = sarsa_move_decider();
                     busy = true;
                     Tasks(action);
                 }
@@ -178,7 +193,12 @@ public class QLearning : MonoBehaviour {
                 if (!busy)
                 {
                     target = Astar.instance.targetSelector();
-                    // selects action based on the model
+					if ((target != null) && target.gameObject.GetComponent<Treasure> ().secured) {
+						Player.instance.detected = true;
+					} else {
+						Player.instance.detected = false;
+					}
+					// selects action based on the model
                     action = useModel();
                     Debug.Log("action" + action);
                     busy = true;
@@ -533,7 +553,13 @@ public class QLearning : MonoBehaviour {
     // SARSA
     double sarsaRewardFunction(int selected_action)
     {
-        
+		if(Player.instance.flee_state() == 1)
+		{
+			if (selected_action == FLEE)
+				return 5;
+			return -5;
+		}
+
         if (Player.instance.detection_state() == 1)
         {
             if (selected_action == SKIP_TARGET)
@@ -541,31 +567,29 @@ public class QLearning : MonoBehaviour {
             return -20;
         }
 
-        if(Player.instance.flee_state() == 1)
+		if (Player.instance.visited_all_state() == 1)
+		{
+			if (selected_action == FLEE)
+				return 10;
+		}
+
+		if (Player.instance.at_exit_state() == 1)
+		{
+			if (selected_action == DROP_TREASURE)
+				return 5;
+			return -5;
+		}
+
+        if (Player.instance.weight_state() == 1)
         {
-            if (selected_action == FLEE)
+            if (selected_action == GO_TO_EXIT)
                 return 5;
             return -5;
         }
-
-        //if (Player.instance.weight_state() == 1)
-        //{
-        //    if (selected_action == GO_TO_EXIT)
-        //        return 5;
-        //    return -5;
-        //}
  
         if (Player.instance.at_open_treasure_state() == 1)
         {
             if (selected_action == PICK_UP_ITEM)
-                return 5;
-            return -5;
-        }
-
-
-        if (Player.instance.at_exit_state() == 1)
-        {
-            if (selected_action == DROP_TREASURE)
                 return 5;
             return -5;
         }
@@ -577,12 +601,6 @@ public class QLearning : MonoBehaviour {
         }
 
         if (Player.instance.risk_state() == 1)
-        {
-            if (selected_action == FLEE)
-                return 10;
-        }
-
-        if (Player.instance.visited_all_state() == 1)
         {
             if (selected_action == FLEE)
                 return 10;
