@@ -43,8 +43,12 @@ public class QLearning : MonoBehaviour {
 
     Vector3 start_pos;
     double reward = 0;
+	float ittr_count = 0f;
 
-    Random rng = new Random();
+    // HYPERPARAMETERS:
+    double gamma = 0.3;
+    double epsilon = 0.2;
+    double alpha = 0.2;
 
     void Awake()
     {
@@ -55,7 +59,13 @@ public class QLearning : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
-        action = 0;
+		if(Player.instance.agent_type == REMEMBERING_AGENT) {
+			gamma = 0.1;
+			epsilon = 0.9;
+			alpha = 0.9;
+		}
+        ittr_count = 0;
+		action = 0;
         runcount = 0;
         start_pos = gameObject.transform.position;
         makeEmpty();
@@ -70,6 +80,12 @@ public class QLearning : MonoBehaviour {
         if (Done && Player.instance.training)
         {
             EnvReset();
+			if(Player.instance.agent_type == REMEMBERING_AGENT) {
+				ittr_count += 1f;
+				float des_epsilon = (float)(Mathf.Pow ((float)0.8, ittr_count));
+				epsilon = Mathf.Max ((float)0.01, des_epsilon);
+				alpha = (float)(Mathf.Pow((float)0.9 , ittr_count));
+			} 
         }
 
         if (Player.instance.agent_type == EVOLVED_AGENT || Player.instance.agent_type == REMEMBERING_AGENT)
@@ -173,11 +189,7 @@ public class QLearning : MonoBehaviour {
         return action;
     }
 
-    // HYPERPARAMETERS:
-    double gamma = 0.3;
-    double epsilon = 0.2;
-    double alpha = 0.2;
-
+  
     int QLearner()
     {
         float rnd = (float)(Random.Range(0, 101)) / 100;
@@ -203,8 +215,10 @@ public class QLearning : MonoBehaviour {
         Q[currentstate, action] = q;
 
         // epsilon decaying
-        epsilon = 0.9 * epsilon;
-        return action;
+		if(Player.instance.agent_type != REMEMBERING_AGENT) {
+			epsilon = 0.9 * epsilon;
+		}
+		return action;
     }
 
 
@@ -240,6 +254,50 @@ public class QLearning : MonoBehaviour {
                 return 2;
         }
 
+        return 0;
+    }
+
+	double greedy_reward_function(int selected_action)
+    {
+		if(Player.instance.flee_state() == 1)
+		{
+			if (selected_action == FLEE) {
+				return 10;
+			} else {
+				return -5;
+			}
+		}
+		if(Player.instance.visited_all_state() == 1)
+		{
+			if (selected_action == FLEE) {
+				return 10;
+			}  else {
+				return -5;
+			}
+		}	
+		if (Player.instance.at_exit_state () == 1) {
+			if (selected_action == DROP_TREASURE) {
+				return 10;
+			} else {
+				return -5;
+			}
+		}
+		if(Player.instance.weight_state() == 1)
+		{
+			if (selected_action == GO_TO_EXIT) {
+				return 5;
+			} else	{
+				return -5;
+			}
+		}
+		if (Player.instance.at_open_treasure_state() == 1)
+		{
+			if (selected_action == PICK_UP_ITEM) {
+				return 10;
+			} else {
+				return -5;
+			}
+		}	
         return 0;
     }
 
@@ -325,7 +383,11 @@ public class QLearning : MonoBehaviour {
         // pick items with smart exchange behavior
         if (selected_action == PICK_UP_ITEM)
         {
-            Astar.instance.exchange_loot(); 
+			if(Player.instance.agent_type == REMEMBERING_AGENT) {
+				Astar.instance.pick_up_loot(); 
+			} else {
+				Astar.instance.exchange_loot();
+			}
         }
 
         // drops treasure
