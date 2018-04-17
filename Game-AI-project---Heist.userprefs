@@ -1,22 +1,22 @@
 ﻿<Properties StartupConfiguration="{AF08BC8A-9512-4456-3C81-6CC904757600}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Treasure.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/QLearning.cs">
     <Files>
-      <File FileName="Assets/Scripts/QLearning.cs" Line="521" Column="27" NotebookId="1" />
-      <File FileName="Assets/Scripts/Astar.cs" Line="48" Column="65" NotebookId="1" />
+      <File FileName="Assets/Scripts/QLearning.cs" Line="583" Column="26" NotebookId="1" />
+      <File FileName="Assets/Scripts/Astar.cs" Line="27" Column="51" NotebookId="1" />
       <File FileName="Assets/Scripts/Treasure.cs" Line="11" Column="32" NotebookId="1" />
-      <File FileName="Assets/Scripts/GameManager.cs" Line="17" Column="34" NotebookId="1" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="38" Column="6" NotebookId="1" />
       <File FileName="Assets/Scripts/Grid.cs" Line="16" Column="17" NotebookId="1" />
       <File FileName="Assets/Scripts/move.cs" Line="10" Column="17" NotebookId="1" />
       <File FileName="Assets/Scripts/Weight.cs" Line="11" Column="5" NotebookId="1" />
       <File FileName="Assets/Scripts/Timer.cs" Line="8" Column="34" NotebookId="1" />
       <File FileName="Assets/Scripts/Turret.cs" Line="16" Column="32" NotebookId="1" />
       <File FileName="Assets/Scripts/ShowLootVal.cs" Line="13" Column="3" NotebookId="1" />
+      <File FileName="Assets/Scripts/MainMenu.cs" Line="51" Column="6" NotebookId="1" />
     </Files>
     <FloatingWindows>
       <FloatingWindow WindowId="1" X="0" Y="23" Width="1080" Height="1824">
         <Files>
-          <File FileName="Assets/Scripts/Player.cs" Line="332" Column="16" />
-          <File FileName="Assets/Scripts/Sarsa.cs" Line="259" Column="22" />
+          <File FileName="Assets/Scripts/Player.cs" Line="14" Column="31" />
         </Files>
       </FloatingWindow>
     </FloatingWindows>

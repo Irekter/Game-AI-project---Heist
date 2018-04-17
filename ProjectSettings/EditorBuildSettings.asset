@@ -5,18 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Scenes/Menu.unity
-    guid: a848b42ac54684e49bc5c71125a29fb1
-  - enabled: 0
-    path: Assets/Scenes/Planning.unity
-    guid: 17de461babc6b9c409118e06fc54c84a
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: Assets/Scenes/Pathfinding.unity
-    guid: 40cde4b347462074c92213273161aea0
   - enabled: 1
-    path: Assets/Scenes/Q-learning.unity
+    path: Assets/Scenes/ChooseLevel.unity
+    guid: c8b6f1e01024740aca8015cb90104c62
+  - enabled: 1
+    path: Assets/Scenes/EasyLevel.unity
     guid: 6ad68e3175b77984b88a6ad51351e8bc
+  - enabled: 1
+    path: Assets/Scenes/HardLevel.unity
+    guid: aec689d538b9242899b5d9a59770f5b1
