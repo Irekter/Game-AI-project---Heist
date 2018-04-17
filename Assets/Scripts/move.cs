@@ -22,7 +22,7 @@ public class move : MonoBehaviour {
 
     public void autoMove(List<Node> mover)
     {
-        if (mover.Count >= 2)
+        if (mover!= null && mover.Count >= 2)
         {
             agent.destination = mover[1].position;
             mover.RemoveAt(0);

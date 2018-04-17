@@ -1,22 +1,22 @@
 ﻿<Properties StartupConfiguration="{AF08BC8A-9512-4456-3C81-6CC904757600}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/QLearning.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Player.cs">
     <Files>
-      <File FileName="Assets/Scripts/QLearning.cs" Line="583" Column="26" NotebookId="1" />
-      <File FileName="Assets/Scripts/Astar.cs" Line="27" Column="51" NotebookId="1" />
-      <File FileName="Assets/Scripts/Treasure.cs" Line="11" Column="32" NotebookId="1" />
-      <File FileName="Assets/Scripts/GameManager.cs" Line="38" Column="6" NotebookId="1" />
-      <File FileName="Assets/Scripts/Grid.cs" Line="16" Column="17" NotebookId="1" />
-      <File FileName="Assets/Scripts/move.cs" Line="10" Column="17" NotebookId="1" />
-      <File FileName="Assets/Scripts/Weight.cs" Line="11" Column="5" NotebookId="1" />
+      <File FileName="Assets/Scripts/QLearning.cs" Line="302" Column="26" NotebookId="1" />
+      <File FileName="Assets/Scripts/Astar.cs" Line="234" Column="70" NotebookId="1" />
+      <File FileName="Assets/Scripts/Treasure.cs" Line="8" Column="29" NotebookId="1" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="23" Column="9" NotebookId="1" />
+      <File FileName="Assets/Scripts/Grid.cs" Line="8" Column="29" NotebookId="1" />
+      <File FileName="Assets/Scripts/move.cs" Line="31" Column="2" NotebookId="1" />
+      <File FileName="Assets/Scripts/Weight.cs" Line="12" Column="25" NotebookId="1" />
       <File FileName="Assets/Scripts/Timer.cs" Line="8" Column="34" NotebookId="1" />
-      <File FileName="Assets/Scripts/Turret.cs" Line="16" Column="32" NotebookId="1" />
-      <File FileName="Assets/Scripts/ShowLootVal.cs" Line="13" Column="3" NotebookId="1" />
-      <File FileName="Assets/Scripts/MainMenu.cs" Line="51" Column="6" NotebookId="1" />
+      <File FileName="Assets/Scripts/Turret.cs" Line="9" Column="29" NotebookId="1" />
+      <File FileName="Assets/Scripts/ShowLootVal.cs" Line="2" Column="34" NotebookId="1" />
+      <File FileName="Assets/Scripts/MainMenu.cs" Line="35" Column="6" NotebookId="1" />
     </Files>
     <FloatingWindows>
       <FloatingWindow WindowId="1" X="0" Y="23" Width="1080" Height="1824">
         <Files>
-          <File FileName="Assets/Scripts/Player.cs" Line="14" Column="31" />
+          <File FileName="Assets/Scripts/Player.cs" Line="46" Column="1" />
         </Files>
       </FloatingWindow>
     </FloatingWindows>

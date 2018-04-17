@@ -20,6 +20,12 @@ void Start()
     }
 
     void Update () {
+
+        if(Input.GetKey(KeyCode.Escape))
+        {
+            SceneManager.LoadScene("ChooseLevel");
+        }
+
         if (Timer.instance.timelimit <= 0)
         {
             if (Player.instance.training)

@@ -27,18 +27,18 @@ public class QLearning : MonoBehaviour {
     const int POSSIBLE_MOVES = 6;
     const int STATES = 512;
 
-    const string evolved_model_path = "./models/evolved_model.txt";
-    const string evolved_train_info = "./training_info/evolved_training_info.txt";
+    const string smart_model_path = "./models/smart_model.txt";
+    const string smart_train_info = "./training_info/smart_training_info.txt";
 
     const string sarsa_model_path = "./models/sarsa_model.txt";
     const string sarsa_train_info = "./training_info/sarsa_training_info.txt";
 
-    const string remembering_model_path = "./models/remembering_model.txt";
-    const string remembering_train_info = "./training_info/remembering_training_info.txt";
+    const string naive_model_path = "./models/naive_model.txt";
+    const string naive_train_info = "./training_info/naive_training_info.txt";
 
     public const int SARSA_AGENT = 4;
-    public const int REMEMBERING_AGENT = 3;
-    public const int EVOLVED_AGENT = 2;
+    public const int NAIVE_AGENT = 3;
+    public const int SMART_AGENT = 2;
     public const int TACTICAL_AGENT = 1;
 
     Vector3 start_pos;
@@ -59,7 +59,7 @@ public class QLearning : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
-		if(Player.instance.agent_type == REMEMBERING_AGENT) {
+		if(Player.instance.agent_type == NAIVE_AGENT) {
 			gamma = 0;
 			epsilon = 0.9;
 			alpha = 0.9;
@@ -80,7 +80,7 @@ public class QLearning : MonoBehaviour {
         if (Done && Player.instance.training)
         {
             EnvReset();
-			if(Player.instance.agent_type == REMEMBERING_AGENT) {
+			if(Player.instance.agent_type == NAIVE_AGENT) {
 				ittr_count += 1f;
 				float des_epsilon = (float)(Mathf.Pow ((float)0.8, ittr_count));
 				epsilon = Mathf.Max ((float)0.01, des_epsilon);
@@ -93,7 +93,7 @@ public class QLearning : MonoBehaviour {
             Player.instance.flee = true;
         }
 
-        if (Player.instance.agent_type == EVOLVED_AGENT || Player.instance.agent_type == REMEMBERING_AGENT)
+        if (Player.instance.agent_type == SMART_AGENT || Player.instance.agent_type == NAIVE_AGENT)
         {
             if (Player.instance.training)
             {
@@ -259,27 +259,36 @@ public class QLearning : MonoBehaviour {
         Q[currentstate, action] = q;
 
         // epsilon decaying
-		if(Player.instance.agent_type != REMEMBERING_AGENT) {
+		if(Player.instance.agent_type != NAIVE_AGENT) {
 			epsilon = 0.9 * epsilon;
 		}
 		return action;
     }
 
 	double rewardFunction(int selected_action) {
-		if (Player.instance.agent_type == REMEMBERING_AGENT) {
-			return greedy_reward_function (selected_action);
+		if (Player.instance.agent_type == NAIVE_AGENT) {
+			return naive_reward_function (selected_action);
 		}
-		return Evolved_rewardFunction(selected_action);
+		return smart_rewardFunction(selected_action);
 	}
 
 
-    double Evolved_rewardFunction(int selected_action)
+    double smart_rewardFunction(int selected_action)
     {
         if(Player.instance.flee_state() == 1)
         {
             if (selected_action == FLEE)
-                return 5;
+                return 10;
+            return -10;
+        }
+        if (Player.instance.visited_all_state() == 1)
+        {
+            if (selected_action == FLEE)
+            {
+                return 10;
+            } 
             return -5;
+
         }
         if (Player.instance.at_open_treasure_state() == 1)
         {
@@ -302,13 +311,13 @@ public class QLearning : MonoBehaviour {
         if(Player.instance.time_state() == 0)
         {
             if (selected_action == GO_TO_TARGET)
-                return 2;
+                return 5;
         }
 
         return 0;
     }
 
-	double greedy_reward_function(int selected_action)
+	double naive_reward_function(int selected_action)
     {
 		if(Player.instance.flee_state() == 1)
 		{
@@ -435,7 +444,7 @@ public class QLearning : MonoBehaviour {
         // pick items with smart exchange behavior
         if (selected_action == PICK_UP_ITEM)
         {
-			if(Player.instance.agent_type == REMEMBERING_AGENT) {
+			if(Player.instance.agent_type == NAIVE_AGENT) {
 				Astar.instance.pick_up_loot(); 
 			} else {
 				Astar.instance.exchange_loot();
@@ -625,24 +634,24 @@ public class QLearning : MonoBehaviour {
 
     string selectModelPath()
     {
-        string path = evolved_model_path;
+        string path = smart_model_path;
 
         if (Player.instance.agent_type == SARSA_AGENT)
             path = sarsa_model_path;
-        else if (Player.instance.agent_type == REMEMBERING_AGENT)
-            path = remembering_model_path;
+        else if (Player.instance.agent_type == NAIVE_AGENT)
+            path = naive_model_path;
 
         return path;
     }
 
     string selectTrainingPath()
     {
-        string training_path = evolved_train_info;
+        string training_path = smart_train_info;
 
         if (Player.instance.agent_type == SARSA_AGENT)
             training_path = sarsa_train_info;
-        else if (Player.instance.agent_type == REMEMBERING_AGENT)
-            training_path = remembering_train_info;
+        else if (Player.instance.agent_type == NAIVE_AGENT)
+            training_path = naive_train_info;
 
         return training_path;
     }

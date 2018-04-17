@@ -10,7 +10,7 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadScene("EasyLevel");
     }
 
-    public void EasyGreedyGame()
+    public void EasyNaiveGame()
     {
         PlayerPrefs.SetInt("agent_type", 3);
       
@@ -38,7 +38,7 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadScene("HardLevel");
     }
 
-    public void HardGreedyGame()
+    public void HardNaiveGame()
     {
         PlayerPrefs.SetInt("agent_type", 3);
     

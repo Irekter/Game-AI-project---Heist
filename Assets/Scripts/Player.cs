@@ -9,7 +9,7 @@ public class Player : MonoBehaviour {
 	
     public static Player instance;
 	public int CAPACITY = 21;
-	public int agent_type = 1;
+	public int agent_type;
 
 	public bool training = true;
 	public bool flee = false;
@@ -43,6 +43,8 @@ public class Player : MonoBehaviour {
 		
     void Start() 
 	{
+        if(!training)
+            agent_type = PlayerPrefs.GetInt("agent_type");
         exit_target = GameObject.FindGameObjectWithTag("Exit").transform.position;
         this.player_loot = new List<Loot>();
         player_reset();

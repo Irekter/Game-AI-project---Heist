@@ -1,7 +1,0 @@
-Trail number: 0 , Gold collected: 40 ,Reward: 5
-Trail number: 1 , Gold collected: 60 ,Reward: 5
-Trail number: 2 , Gold collected: 80 ,Reward: 0
-Trail number: 3 , Gold collected: 80 ,Reward: 5
-Trail number: 4 , Gold collected: 80 ,Reward: 5
-Trail number: 5 , Gold collected: 80 ,Reward: 5
-Trail number: 6 , Gold collected: 80 ,Reward: 5

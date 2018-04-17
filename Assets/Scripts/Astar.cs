@@ -231,7 +231,7 @@ public class Astar : MonoBehaviour {
 			Node next = path [path.Count - 1];
 
 			foreach (Node node in path) {
-				Ray ray = new Ray (last.position, (node.position - last.position).normalized);
+				Ray ray = new Ray (last.position, (node.position - last.position));
             
 				if (Physics.SphereCast (ray, 0.5f, out info, Vector3.Distance (node.position, last.position), obs))
 					continue;
