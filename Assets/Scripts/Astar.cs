@@ -44,12 +44,8 @@ public class Astar : MonoBehaviour {
         target = null;
         foreach (GameObject possible_trgt in trgts)
         {
-			if (possible_trgt == exit) {
-				return possible_trgt.transform;
-			}
-
 			float currentDistance = Vector3.Distance(possible_trgt.transform.position, start.position);
-			if(possible_trgt.GetComponent<Treasure>().breaking_time > 0) {
+			if(possible_trgt.GetComponent<Treasure>().breaking_time > 0.1) {
 				if (currentDistance < mindistance) {
 					target = possible_trgt.transform;
 					mindistance = currentDistance;
@@ -90,6 +86,9 @@ public class Astar : MonoBehaviour {
 		{
 			trgts.Add (possible_trgt);
 		}
+        if(trgts.Count() > 0) {
+            Player.instance.flee = false;
+        }
 	}
 
     public void pick_up_loot()
@@ -106,12 +105,13 @@ public class Astar : MonoBehaviour {
         {
             // performs looting
 			toberemoved.GetComponent<Treasure>().empty_treasure();
+            toberemoved.GetComponent<Treasure>().GetComponent<ShowLootVal>().Show_Gold_Value();
         }
         else
         {
 			if (toberemoved.GetComponent<Treasure>().gold_weight <= Player.instance.CAPACITY)
 			{
-				toberemoved.GetComponent<Treasure> ().breaking_time = 0.1f;
+                toberemoved.GetComponent<Treasure>().breaking_time = 0.1f;
 				opened_treasures.Add(toberemoved);
 			}
 			Player.instance.set_current_treasure(null);

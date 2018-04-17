@@ -36,10 +36,10 @@ public class QLearning : MonoBehaviour {
     const string remembering_model_path = "./models/remembering_model.txt";
     const string remembering_train_info = "./training_info/remembering_training_info.txt";
 
-    const int SARSA_AGENT = 4;
-    const int REMEMBERING_AGENT = 3;
-    const int EVOLVED_AGENT = 2;
-    const int TACTICAL_AGENT = 1;
+    public const int SARSA_AGENT = 4;
+    public const int REMEMBERING_AGENT = 3;
+    public const int EVOLVED_AGENT = 2;
+    public const int TACTICAL_AGENT = 1;
 
     Vector3 start_pos;
     double reward = 0;
@@ -60,7 +60,7 @@ public class QLearning : MonoBehaviour {
     // Use this for initialization
     void Start() {
 		if(Player.instance.agent_type == REMEMBERING_AGENT) {
-			gamma = 0.1;
+			gamma = 0;
 			epsilon = 0.9;
 			alpha = 0.9;
 		}
@@ -86,6 +86,11 @@ public class QLearning : MonoBehaviour {
 				epsilon = Mathf.Max ((float)0.01, des_epsilon);
 				alpha = (float)(Mathf.Pow((float)0.9 , ittr_count));
 			} 
+        }
+
+        if(Player.instance.visited_all_state() == 1)
+        {
+            Player.instance.flee = true;
         }
 
         if (Player.instance.agent_type == EVOLVED_AGENT || Player.instance.agent_type == REMEMBERING_AGENT)
@@ -477,14 +482,15 @@ public class QLearning : MonoBehaviour {
     //Learning function for sarsa
     int SarsaLearner()
     {
-        int rnd = Random.Range(0, 2);
+        float rnd = (float)(Random.Range(0, 101)) / 100;
         int currentstate = Player.instance.get_state();
 
         // random action according to epsilon-greedy 
-        //if (rnd < epsilon)
-        //    action = Random.Range(0, POSSIBLE_MOVES);
-        //else
-        //
+        if (rnd < epsilon)
+            action = Random.Range(0, POSSIBLE_MOVES);
+        else
+            action = getAction(currentstate);
+        
         action = getAction(currentstate);
         Debug.Log("Sarsa Learning action: " + action);
 
@@ -508,41 +514,47 @@ public class QLearning : MonoBehaviour {
     // SARSA
     double sarsaRewardFunction(int selected_action)
     {
-        if (Player.instance.weight_state() == 1)
+        
+        if (Player.instance.detection_state() == 1)
         {
-            if (selected_action == GO_TO_EXIT)
+            if (selected_action == SKIP_TARGET)
                 return 10;
-        }
-        else
-        {
-            if (selected_action == GO_TO_TARGET)
-                return 2;
+            return -20;
         }
 
+        if(Player.instance.flee_state() == 1)
+        {
+            if (selected_action == FLEE)
+                return 5;
+            return -5;
+        }
+
+        //if (Player.instance.weight_state() == 1)
+        //{
+        //    if (selected_action == GO_TO_EXIT)
+        //        return 5;
+        //    return -5;
+        //}
+ 
         if (Player.instance.at_open_treasure_state() == 1)
         {
             if (selected_action == PICK_UP_ITEM)
                 return 5;
+            return -5;
         }
 
-        if (Player.instance.detection_state() == 1)
-        {
-            if (selected_action == SKIP_TARGET)
-                return 20;
-            return -20;
-        }
 
         if (Player.instance.at_exit_state() == 1)
         {
             if (selected_action == DROP_TREASURE)
-                return 8;
+                return 5;
+            return -5;
         }
 
         if (Player.instance.time_state() == 1)
         {
             if (selected_action == FLEE)
                 return 10;
-           
         }
 
         if (Player.instance.risk_state() == 1)
@@ -554,7 +566,7 @@ public class QLearning : MonoBehaviour {
         if (Player.instance.visited_all_state() == 1)
         {
             if (selected_action == FLEE)
-                return 20;
+                return 10;
         }
 
         return 0;

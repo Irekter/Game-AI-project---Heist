@@ -1,22 +1,22 @@
 ﻿<Properties StartupConfiguration="{AF08BC8A-9512-4456-3C81-6CC904757600}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/ShowLootVal.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Treasure.cs">
     <Files>
-      <File FileName="Assets/Scripts/Sarsa.cs" Line="146" Column="52" NotebookId="1" />
-      <File FileName="Assets/Scripts/QLearning.cs" Line="328" Column="44" NotebookId="1" />
-      <File FileName="Assets/Scripts/Astar.cs" Line="122" Column="100" NotebookId="1" />
-      <File FileName="Assets/Scripts/Treasure.cs" Line="35" Column="27" NotebookId="1" />
-      <File FileName="Assets/Scripts/GameManager.cs" Line="27" Column="48" NotebookId="1" />
+      <File FileName="Assets/Scripts/QLearning.cs" Line="521" Column="27" NotebookId="1" />
+      <File FileName="Assets/Scripts/Astar.cs" Line="48" Column="65" NotebookId="1" />
+      <File FileName="Assets/Scripts/Treasure.cs" Line="11" Column="32" NotebookId="1" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="17" Column="34" NotebookId="1" />
       <File FileName="Assets/Scripts/Grid.cs" Line="16" Column="17" NotebookId="1" />
-      <File FileName="Assets/Scripts/move.cs" Line="13" Column="25" NotebookId="1" />
-      <File FileName="Assets/Scripts/Weight.cs" Line="13" Column="5" NotebookId="1" />
-      <File FileName="Assets/Scripts/Timer.cs" Line="13" Column="25" NotebookId="1" />
-      <File FileName="Assets/Scripts/Turret.cs" Line="30" Column="12" NotebookId="1" />
-      <File FileName="Assets/Scripts/ShowLootVal.cs" Line="15" Column="1" NotebookId="1" />
+      <File FileName="Assets/Scripts/move.cs" Line="10" Column="17" NotebookId="1" />
+      <File FileName="Assets/Scripts/Weight.cs" Line="11" Column="5" NotebookId="1" />
+      <File FileName="Assets/Scripts/Timer.cs" Line="8" Column="34" NotebookId="1" />
+      <File FileName="Assets/Scripts/Turret.cs" Line="16" Column="32" NotebookId="1" />
+      <File FileName="Assets/Scripts/ShowLootVal.cs" Line="13" Column="3" NotebookId="1" />
     </Files>
     <FloatingWindows>
       <FloatingWindow WindowId="1" X="0" Y="23" Width="1080" Height="1824">
         <Files>
-          <File FileName="Assets/Scripts/Player.cs" Line="281" Column="28" />
+          <File FileName="Assets/Scripts/Player.cs" Line="332" Column="16" />
+          <File FileName="Assets/Scripts/Sarsa.cs" Line="259" Column="22" />
         </Files>
       </FloatingWindow>
     </FloatingWindows>

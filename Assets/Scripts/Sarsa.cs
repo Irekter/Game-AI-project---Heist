@@ -118,10 +118,10 @@ public class Sarsa : MonoBehaviour {
         int rnd = Random.Range(0,2);
         int currentstate = Player.instance.get_state();
 
-        // random action according to epsilon-greedy 
-        //if (rnd < epsilon)
-        //    action = Random.Range(0, POSSIBLE_MOVES);
-        //else
+        //random action according to epsilon-greedy 
+        if (rnd < epsilon)
+            action = Random.Range(0, POSSIBLE_MOVES);
+        else
             action = getAction(currentstate);
         Debug.Log("action: " + action);
 

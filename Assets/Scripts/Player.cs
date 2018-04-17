@@ -330,21 +330,23 @@ public class Player : MonoBehaviour {
     // returns 1 if full
     // else 0
     public int weight_state() {
-        if(is_full())
+        if (agent_type == QLearning.SARSA_AGENT)
         {
-            return 1;
+            if (percent_full() >= 65)
+            {
+                return 1;
+            }
+        }
+        else
+        {
+            if (is_full())
+            {
+                return 1;
+            }
         }
         return 0;
 	}
 
-    //public int weight_state()
-    //{
-    //    if (percent_full() >= 65)
-    //    {
-    //        return 1;
-    //    }
-    //    return 0;
-    //}
 
     // returns 1 if distance to exit is greater than distance to the target
     // else return 0
@@ -397,7 +399,7 @@ public class Player : MonoBehaviour {
     // else return 0
     public int detection_state()
     {
-        if(current_treasure != null && current_treasure.GetComponent<Treasure>().secured){
+        if(next_treasure != null && next_treasure.GetComponent<Treasure>().secured){
             return 1;
         }
         return 0;
@@ -531,7 +533,7 @@ public class Player : MonoBehaviour {
             state += (int)Math.Pow(2, power);
         power++;
 
-		if ((detection_state() == 1) || ((current_treasure != null) && (current_treasure.GetComponent<Treasure>().secured)))
+		if ((current_treasure != null) && (current_treasure.GetComponent<Treasure>().secured))
             state += (int)Math.Pow(2, power);
         power++;
 
