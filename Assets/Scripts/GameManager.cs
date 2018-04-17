@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour {
 void Start()
     {
 		if (Player.instance.training) {
-			Time.timeScale = 10;
+			Time.timeScale = 2;
 		}
     }
 

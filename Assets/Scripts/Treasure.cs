@@ -52,4 +52,11 @@ public class Treasure : MonoBehaviour
 		breaking_time = 2;
 		set_looting_time ();
 	}
+
+    public bool has_gold()
+    {
+        if (looting_time > 0)
+            return true;
+        return false;
+    }
 }

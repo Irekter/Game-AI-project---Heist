@@ -15,10 +15,6 @@ public class Weight : MonoBehaviour
 
     float W;
 
-    //private void Start()
-    //{
-    //    bagBar = GetComponent<Image>();
-    //}
     public void Awake()
     {
         weighttext = GetComponent<Text>();

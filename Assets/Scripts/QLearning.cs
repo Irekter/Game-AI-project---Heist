@@ -119,10 +119,11 @@ public class QLearning : MonoBehaviour {
         int currentstate = Player.instance.get_state();
 
         // random action according to epsilon-greedy 
-        if (rnd < epsilon)
-            action = Random.Range(0, POSSIBLE_MOVES);
-        else
-            action = getAction(currentstate);
+        //if (rnd < epsilon)
+        //    action = Random.Range(0, POSSIBLE_MOVES);
+        //else
+            //
+        action = getAction(currentstate);
         Debug.Log("action: " + action);
 
         int nextstate = Player.instance.get_next_state(action);
@@ -142,163 +143,14 @@ public class QLearning : MonoBehaviour {
     }
 
 
-	// Chaitali's reward function (work in progress)
-	/*int reward_greedy_behaviour(int selected_action)
-	{
-	
-		if(Player.instance.flee_state() == 1)
-		{
-			if (selected_action == FLEE) {
-				return 5;
-			} else if (selected_action == GO_TO_EXIT) {
-				return 3;
-			} else {
-				return -5;
-			}
-		}
-
-		if(Player.instance.visited_all_state() == 1)
-		{
-			if (selected_action == FLEE) {
-				return 5;
-			} else if (selected_action == GO_TO_EXIT) {
-				return 3;
-			} else {
-				return -5;
-			}
-		}
-
-		if(Player.instance.weight_state() == 1)
-		{
-			if (selected_action == GO_TO_EXIT) {
-				return 5;
-			} else	{
-				return -1;
-			}
-		}
-
-		//at_open_treasure_state()
-
-		//at_exit_state()
-
-		if(Player.instance.dist_to_trgt_state() == 1)
-		{
-			if (selected_action == GO_TO_EXIT) {
-				return 5;
-			} else	{
-				return -1;
-			}
-		}
-
-
-		//time_state()
-
-		if (Player.instance.time_state() == 0)
-		{
-			if (selected_action == GO_TO_TARGET)
-				reward += 2;
-		}
-
-		if(Player.instance.at_open_treasure_state() == 1)
-		{
-			if (selected_action == PICK_UP_ITEM)
-				reward += 2;
-		}
-
-		if(Player.instance.at_exit_state() == 1)
-		{
-			if (selected_action == DROP_TREASURE)
-				reward += 2;
-			if (selected_action == GO_TO_TARGET)
-				reward += 1;
-		}
-
-		else
-		{
-			if (selected_action == GO_TO_EXIT)
-				reward += 1;
-			if (selected_action == FLEE)
-				reward += 2;
-		}
-
-		if(Player.instance.risk_state() == 1)
-		{
-			if (selected_action == GO_TO_TARGET)
-				reward += 2;
-		}
-		else
-		{
-			if (selected_action == SKIP_TARGET)
-				reward += 2;    
-		}
-
-
-		return 0;
-	}*/
-
-
-
-
     double rewardFunction(int selected_action)
     {
-        double reward = 0; 
-
-        if(Player.instance.weight_state() == 1)
-        {
-            if (selected_action == GO_TO_EXIT)
-                reward += 2;
-            if (selected_action == FLEE)
-                reward += 1;
-        }
-
-        if(Player.instance.at_open_treasure_state() == 1)
+        if (Player.instance.at_open_treasure_state() == 1)
         {
             if (selected_action == PICK_UP_ITEM)
-                reward += 2;
-        }
-
-        if(Player.instance.detection_state() == 1)
-        {
-            if (selected_action == SKIP_TARGET)
-                reward += 2;
-        }
-
-        if(Player.instance.at_exit_state() == 1)
-        {
-            if (selected_action == DROP_TREASURE)
-                reward += 2;
-            if (selected_action == GO_TO_TARGET)
-                reward += 1;
-        }
-
-        if (Player.instance.time_state() == 0)
-        {
-            if (selected_action == GO_TO_TARGET)
-                reward += 2;
-        }
-        else
-        {
-            if (selected_action == GO_TO_EXIT)
-                reward += 1;
-            if (selected_action == FLEE)
-                reward += 2;
-        }
-
-        if(Player.instance.risk_state() == 1)
-        {
-            if (selected_action == GO_TO_TARGET)
-                reward += 2;
-        }
-        else
-        {
-            if (selected_action == SKIP_TARGET)
-                reward += 2;    
-        }
-
-        if(Player.instance.visited_all_state() == 1)
-        {
-            if (selected_action == FLEE)
-                reward += 2;
+                return 100;
+            else
+                return -1;
         }
 
         return reward;
@@ -357,12 +209,16 @@ public class QLearning : MonoBehaviour {
         {
             if (target != null)
             {
-                Player.instance.next_treasure = target.gameObject;
+                Player.instance.set_current_treasure(target.gameObject);
                 Grid.instance.final_path = Astar.instance.pathfinder(agent.transform.position, target.position);
                 move.instance.autoMove(Grid.instance.final_path);
             }
             else
+            {
+                Debug.Log("tasks error");
+                Player.instance.flee = true;
                 busy = false;
+            }
         }
 
         // go to exit
@@ -372,8 +228,11 @@ public class QLearning : MonoBehaviour {
             Grid.instance.final_path = Astar.instance.pathfinder(agent.transform.position, target.position);
             move.instance.autoMove(Grid.instance.final_path);
 
-            if(Vector3.Distance(agent.transform.position, target.position) <= 1)
-                busy = false;
+            if (Vector3.Distance(agent.transform.position, target.position) <= 1)
+            {
+                Debug.Log("Near exit");
+                busy = false; 
+            }
         }
 
         // pick items with smart exchange behavior
@@ -400,8 +259,11 @@ public class QLearning : MonoBehaviour {
             Grid.instance.final_path = Astar.instance.pathfinder(agent.transform.position, target.position);
             move.instance.autoMove(Grid.instance.final_path);
 
-            if(Vector3.Distance(agent.transform.position, target.position) <= 1)
-                Done = true;
+            if (Vector3.Distance(agent.transform.position, target.position) <= 1)
+            { 
+                Player.instance.drop_treasure_at_exit();
+                Done = true; 
+            }
         }
     }
 

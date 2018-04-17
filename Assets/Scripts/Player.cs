@@ -97,10 +97,6 @@ public class Player : MonoBehaviour {
 		{
 			flee = true;
 		}
-        else 
-		{
-			flee = false;
-		}
 	}
 
 	private void update_player_motion() 
@@ -108,6 +104,7 @@ public class Player : MonoBehaviour {
 		if (break_time > 0) {
             if(break_time <= Time.deltaTime)
             {
+                Debug.Log("update motion error");
                 QLearning.instance.busy = false;
                 resume_player_motion();
             }
@@ -121,14 +118,14 @@ public class Player : MonoBehaviour {
 		else if (loot_time > 0) 
 		{
             if (loot_time <= Time.deltaTime)
-            {
-                resume_player_motion();
+            {                
                 if (current_loot != null)
                 {
                     add_loot(current_loot);
                     last_loot = current_loot;
                     destroyCoin();
                 }
+                resume_player_motion();
             }
             else
             {
@@ -244,10 +241,11 @@ public class Player : MonoBehaviour {
 			GameObject coin = current_treasure.transform.GetChild (0).gameObject;
 				Destroy (coin);
 		}
-		QLearning.instance.busy = false;
 		current_treasure = null;
 		current_loot = null;
-   	}
+        Debug.Log("Destroy coin");
+        QLearning.instance.busy = false;
+    }
 
 	public void add_loot(Loot treasure_loot)
 	{
@@ -264,12 +262,13 @@ public class Player : MonoBehaviour {
 		if (current_treasure != null) {
 			Loot treasure_loot = current_treasure.GetComponent<Treasure>().get_treasure_loot(); 
 			if (is_accepting_loot (treasure_loot.loot_weight)) { 
-				if (at_open_treasure_state () == 1) {
+                if (current_treasure != null && Vector3.Distance(transform.position, current_treasure.transform.position) <= 1) {
 					current_loot = treasure_loot;
 					return true;
 				}
 			}
 		}
+        Debug.Log("pick_new_loot currenttreasure is null");
 		QLearning.instance.busy = false;
 		return false;
 	}
@@ -285,7 +284,7 @@ public class Player : MonoBehaviour {
             Loot treasure_loot = current_treasure.GetComponent<Treasure>().get_treasure_loot();
 
 			if (is_accepting_loot (treasure_loot.loot_weight)) { 
-				if (at_open_treasure_state () == 1) {
+                if (current_treasure != null && Vector3.Distance(transform.position, current_treasure.transform.position) <= 1) {
 					current_loot = treasure_loot;
 					return true;
 				}
@@ -307,7 +306,7 @@ public class Player : MonoBehaviour {
             }
             if (found_exchange)
             {
-				if (at_open_treasure_state () == 1) {
+                if (current_treasure != null && Vector3.Distance(transform.position, current_treasure.transform.position) <= 1) {
 					current_loot = treasure_loot;
 					player_loot.Remove (it_loot);
 					gold_weight -= it_loot.loot_weight;
@@ -316,7 +315,7 @@ public class Player : MonoBehaviour {
 				}
             }
         }
-		QLearning.instance.busy = false;
+		
 		return false;
 	}
 
@@ -408,7 +407,8 @@ public class Player : MonoBehaviour {
     {
         if(current_treasure != null && Vector3.Distance(transform.position,current_treasure.transform.position) <= 1)
         {
-            return 1;
+            if(current_treasure.GetComponent<Treasure>().has_gold())
+                return 1;
         }
         return 0;
     }
@@ -419,7 +419,8 @@ public class Player : MonoBehaviour {
     {
 		if (Vector3.Distance(transform.position, exit_target) <= 1)
         {
-            return 1;
+            if(gold_weight > 0)
+                return 1;
         }
         return 0;
     }
@@ -701,13 +702,18 @@ public class Player : MonoBehaviour {
     {
         if (current_treasure != null)
         {
-           /* float numerator = (current_treasure.GetComponent<Treasure>().breaking_time - break_time);
-            lootBar.fillAmount = numerator / current_treasure.GetComponent<Treasure>().breaking_time;*/
-			if (break_time <= Time.fixedTime) {
-				lootBar.fillAmount = 0;
-			} else {
-				lootBar.fillAmount = (2 - break_time) / 2;
-			}
+
+            //float numerator = (current_treasure.GetComponent<Treasure>().breaking_time - break_time);
+            //lootBar.fillAmount = numerator / current_treasure.GetComponent<Treasure>().breaking_time;
+            //Debug.Log("numerator & time" + numerator + " " + current_treasure.GetComponent<Treasure>().breaking_time);
+            if (break_time <= Time.deltaTime)
+            {
+                lootBar.fillAmount = 0;
+            }
+            else
+            {
+                lootBar.fillAmount = (2 - break_time) / 2;
+            }
         }
     }
 }

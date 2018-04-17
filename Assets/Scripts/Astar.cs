@@ -42,7 +42,6 @@ public class Astar : MonoBehaviour {
     {
         float mindistance = int.MaxValue;
         target = null;
-		bool found = false;
         foreach (GameObject possible_trgt in trgts)
         {
             float currentDistance = Vector3.Distance(possible_trgt.transform.position, start.position);
@@ -56,8 +55,6 @@ public class Astar : MonoBehaviour {
 				break;
 			}
         }
-        if(target!=null)
-            Player.instance.set_current_treasure(target.gameObject);
         return target;
     }
 
@@ -79,7 +76,8 @@ public class Astar : MonoBehaviour {
                 {
                     // returns loot attributes and sets player breaking time and treasure breaking time set to zero
                     target.GetComponent<Treasure>().open_treasure();
-                    QLearning.instance.busy = false;
+                    //Debug.Log("open_treasure error");
+
                 }
             }
         }
@@ -88,7 +86,7 @@ public class Astar : MonoBehaviour {
     public void pick_up_loot()
     {
 		GameObject toberemoved = Player.instance.get_current_treasure();
-		if (Player.instance.at_open_treasure_state () == 1)
+        if (toberemoved != null && Vector3.Distance(transform.position, toberemoved.transform.position) <= 1)
         {
             // after opening check if we can take the treasure
             if (Player.instance.pick_new_loot())
@@ -112,15 +110,21 @@ public class Astar : MonoBehaviour {
     public void exchange_loot()
     {
         GameObject toberemoved = Player.instance.get_current_treasure();
-        if (Player.instance.at_open_treasure_state () == 0) {
-			QLearning.instance.busy = false;
-			return;
-		}
+        //      if (toberemoved!=null && (Vector3.Distance(Player.instance.transform.position,toberemoved.transform.position) > 2)) {
+        //          Debug.Log(Vector3.Distance(Player.instance.transform.position, toberemoved.transform.position));
+        //          Debug.Log(Vector3.Distance(exit.transform.position, toberemoved.transform.position));
+        //          Debug.Log("exchange failed!");
+        //          QLearning.instance.busy = false;
+        //	return;
+        //}
+       
 		if (toberemoved != null)
         {
+            Debug.Log("My name: " + toberemoved.name);
             // after opening check if we can take the treasure
-            if (Player.instance.exchange_loot())
+            if (Player.instance.exchange_loot() && Vector3.Distance(start.position,toberemoved.transform.position) < 2)
             {
+                Debug.Log("performed loot");
                 // performs looting
                 toberemoved.GetComponent<Treasure>().empty_treasure();
             }
@@ -133,10 +137,16 @@ public class Astar : MonoBehaviour {
                     // tracks treasures that were opened but not looted yet
                     opened_treasures.Add(toberemoved);
                 }
+                Debug.Log("exchange astr inside");
+                QLearning.instance.busy = false;
             }
         }
         else
+        {
+            Debug.Log("exchange astar else");
             QLearning.instance.busy = false;
+        }
+            
     }
 
 
@@ -144,6 +154,7 @@ public class Astar : MonoBehaviour {
     {
         if(trgts.Count()>0)
             trgts.Remove(target.gameObject);
+        Debug.Log("skipped");
         QLearning.instance.busy = false;
     }
 
