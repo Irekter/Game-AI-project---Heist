@@ -28,7 +28,6 @@ public class Player : MonoBehaviour {
 	private GameObject current_treasure;
 
 	private Loot current_loot;
-    public Loot last_loot;
     public GameObject next_treasure;
 	private List<Loot> player_loot;
     public Image lootBar;
@@ -44,7 +43,6 @@ public class Player : MonoBehaviour {
 	{
         exit_target = GameObject.FindGameObjectWithTag("Exit").transform.position;
         this.player_loot = new List<Loot>();
-        last_loot = new Loot();
         player_reset();
     }
 
@@ -71,7 +69,6 @@ public class Player : MonoBehaviour {
 
 		current_treasure = null;
 		current_loot = null;
-		last_loot = null;
 
 		agent.velocity = Vector3.zero;
 		agent.transform.Rotate(new Vector3(0,0,0));
@@ -123,7 +120,6 @@ public class Player : MonoBehaviour {
                 if (current_loot != null)
                 {
                     add_loot(current_loot);
-                    last_loot = current_loot;
                     destroyCoin();
                 }
                 resume_player_motion();
@@ -196,6 +192,7 @@ public class Player : MonoBehaviour {
 			gold_weight_at_exit += gold_weight;
 			gold_weight = 0;
 			player_loot.Clear ();
+			Astar.instance.pick_up_loot_adder();
 			QLearning.instance.busy = false;
 		} else {
 			QLearning.instance.busy = false;
@@ -238,9 +235,9 @@ public class Player : MonoBehaviour {
 
 	private void destroyCoin()
 	{
-		if (!training && (current_treasure != null)) {
+		if ((!training) && (current_treasure != null)) {
 			GameObject coin = current_treasure.transform.GetChild (0).gameObject;
-				Destroy (coin);
+			Destroy (coin);
 		}
 		current_treasure = null;
 		current_loot = null;
@@ -262,13 +259,12 @@ public class Player : MonoBehaviour {
 		if (current_treasure != null) {
 			Loot treasure_loot = current_treasure.GetComponent<Treasure>().get_treasure_loot(); 
 			if (is_accepting_loot (treasure_loot.loot_weight)) { 
-                if (current_treasure != null && Vector3.Distance(transform.position, current_treasure.transform.position) <= 1) {
+				if ((current_treasure != null) && (Vector3.Distance(transform.position, current_treasure.transform.position) <= 1)) {
 					current_loot = treasure_loot;
 					return true;
 				}
 			}
 		}
-		QLearning.instance.busy = false;
 		return false;
 	}
 		
@@ -283,7 +279,7 @@ public class Player : MonoBehaviour {
             Loot treasure_loot = current_treasure.GetComponent<Treasure>().get_treasure_loot();
 
 			if (is_accepting_loot (treasure_loot.loot_weight)) { 
-                if (current_treasure != null && Vector3.Distance(transform.position, current_treasure.transform.position) <= 1) {
+				if ((current_treasure != null) && (Vector3.Distance(transform.position, current_treasure.transform.position) <= 1)) {
 					current_loot = treasure_loot;
 					return true;
 				}
@@ -402,7 +398,6 @@ public class Player : MonoBehaviour {
     public int detection_state()
     {
         if(current_treasure != null && current_treasure.GetComponent<Treasure>().secured){
-            Debug.Log("treasure secured");
             return 1;
         }
         return 0;
@@ -448,8 +443,9 @@ public class Player : MonoBehaviour {
 
     public int visited_all_state()
     {
-        if (Astar.instance.trgts.Count == 0 && current_treasure==null)
-            return 1;
+		if ((Astar.instance.trgts.Count == 0) && (current_treasure == null)) {
+			return 1;
+		}
         return 0;
     }
 
@@ -710,10 +706,6 @@ public class Player : MonoBehaviour {
     {
         if (current_treasure != null)
         {
-
-            //float numerator = (current_treasure.GetComponent<Treasure>().breaking_time - break_time);
-            //lootBar.fillAmount = numerator / current_treasure.GetComponent<Treasure>().breaking_time;
-            //Debug.Log("numerator & time" + numerator + " " + current_treasure.GetComponent<Treasure>().breaking_time);
             if (break_time <= Time.deltaTime)
             {
                 lootBar.fillAmount = 0;

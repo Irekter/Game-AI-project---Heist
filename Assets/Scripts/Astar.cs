@@ -44,11 +44,19 @@ public class Astar : MonoBehaviour {
         target = null;
         foreach (GameObject possible_trgt in trgts)
         {
-            float currentDistance = Vector3.Distance(possible_trgt.transform.position, start.position);
-		    if (currentDistance < mindistance) {
+			if (possible_trgt == exit) {
+				return possible_trgt.transform;
+			}
+
+			float currentDistance = Vector3.Distance(possible_trgt.transform.position, start.position);
+			if(possible_trgt.GetComponent<Treasure>().breaking_time > 0) {
+				if (currentDistance < mindistance) {
 					target = possible_trgt.transform;
 					mindistance = currentDistance;
-			} 
+				}
+			} else {
+				return possible_trgt.transform;
+			}
         }
         return target;
     }
@@ -76,29 +84,39 @@ public class Astar : MonoBehaviour {
         }
     }
 
+	public void pick_up_loot_adder()
+	{
+		foreach (GameObject possible_trgt in opened_treasures)
+		{
+			trgts.Add (possible_trgt);
+		}
+	}
+
     public void pick_up_loot()
     {
 		GameObject toberemoved = Player.instance.get_current_treasure();
-        if (toberemoved != null && Vector3.Distance(transform.position, toberemoved.transform.position) <= 1)
+
+		if ((toberemoved == null) || (Vector3.Distance(Player.instance.transform.position, toberemoved.transform.position) > 1)) {
+			QLearning.instance.busy = false;
+			return;
+		}
+			
+        // after opening check if we can take the treasure
+        if (Player.instance.pick_new_loot())
         {
-            // after opening check if we can take the treasure
-            if (Player.instance.pick_new_loot())
-            {
-                // performs looting
-                target.GetComponent<Treasure>().empty_treasure();
-                target.GetComponent<Treasure>().GetComponent<ShowLootVal>().Show_Gold_Value();
-            }
-            else
-            {
-                // can't loot now so we keep track to loot in next iteration
-                if (toberemoved.GetComponent<Treasure>().gold_weight <= Player.instance.CAPACITY)
-                {
-                    // tracks treasures that were opened but not looted yet
-					toberemoved.GetComponent<Treasure>().breaking_time = 0;
-					trgts.Add(toberemoved);
-                }
-            }
+            // performs looting
+			toberemoved.GetComponent<Treasure>().empty_treasure();
         }
+        else
+        {
+			if (toberemoved.GetComponent<Treasure>().gold_weight <= Player.instance.CAPACITY)
+			{
+				toberemoved.GetComponent<Treasure> ().breaking_time = 0.1f;
+				opened_treasures.Add(toberemoved);
+			}
+			Player.instance.set_current_treasure(null);
+			QLearning.instance.busy = false;
+        } 
     }
 
     public void exchange_loot()
