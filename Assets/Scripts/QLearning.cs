@@ -249,7 +249,7 @@ public class QLearning : MonoBehaviour {
 
         int nextstate = Player.instance.get_next_state(action);
 
-        reward = Evolved_rewardFunction(action);
+		reward = rewardFunction(action);
 
         double currentQ = Q[currentstate, action];
         double maxQ = getMaxQ(nextstate);
@@ -264,6 +264,13 @@ public class QLearning : MonoBehaviour {
 		}
 		return action;
     }
+
+	double rewardFunction(int selected_action) {
+		if (Player.instance.agent_type == REMEMBERING_AGENT) {
+			return greedy_reward_function (selected_action);
+		}
+		return Evolved_rewardFunction(selected_action);
+	}
 
 
     double Evolved_rewardFunction(int selected_action)
@@ -326,6 +333,7 @@ public class QLearning : MonoBehaviour {
 				return -5;
 			}
 		}
+
 		if(Player.instance.weight_state() == 1)
 		{
 			if (selected_action == GO_TO_EXIT) {
@@ -341,7 +349,7 @@ public class QLearning : MonoBehaviour {
 			} else {
 				return -5;
 			}
-		}	
+		}
         return 0;
     }
 
